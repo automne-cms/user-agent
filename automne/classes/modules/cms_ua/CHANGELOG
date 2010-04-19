@@ -1,2 +1,6 @@
+v0.11
+[BUG] : Add a check to avoid XSS attack accross datas URL
+[FEATURE] : Add module tag explanation for templates and rows
+
 v0.1
 First module release

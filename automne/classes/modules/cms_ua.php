@@ -28,7 +28,7 @@ define("MOD_CMS_UA_CODENAME", "cms_ua");
   */
 class CMS_module_cms_ua extends CMS_moduleValidation
 {
-	const MESSAGE_MOD_CMS_PDF_EXPLANATION = 5;
+	const MESSAGE_MOD_CMS_UA_EXPLANATION = 2;
 	
 	/**
 	  * Module autoload handler
@@ -141,16 +141,23 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		return $tagContent;
 	}
 	
+	/**
+	  * Return the browser user agent infos
+	  * This method use $_SESSION['cms_ua']['browserInfos'] to store browser informations
+	  *
+	  * @return array : the browser infos
+	  * @access private
+	  */
 	private function _getBrowserInfos() {
 		if (isset($_SESSION['cms_ua']['browserInfos'])) {
 			//check request
 			if (isset($_REQUEST['ua']) && is_array($_REQUEST['ua'])) {
 				foreach($_REQUEST['ua'] as $key => $value) {
 					if (isset($_SESSION['cms_ua']['browserInfos']['browscap'][$key])) {
-						$_SESSION['cms_ua']['browserInfos']['browscap'][$key] = $value;
+						$_SESSION['cms_ua']['browserInfos']['browscap'][$key] = io::htmlspecialchars($value);
 					}
 					if (isset($_SESSION['cms_ua']['browserInfos']['wurfl'][$key])) {
-						$_SESSION['cms_ua']['browserInfos']['wurfl'][$key] = $value;
+						$_SESSION['cms_ua']['browserInfos']['wurfl'][$key] = io::htmlspecialchars($value);
 					}
 				}
 			}
@@ -169,31 +176,36 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		//get Browscap datas
 		$browscap = new Browscap(PATH_CACHE_FS.'/browscap');
 		$browscap->silent = false;
-		$_SESSION['cms_ua']['browserInfos']['browscap'] = $browscap->getBrowser($_SERVER['HTTP_USER_AGENT'], true);
-		
+		$_SESSION['cms_ua']['browserInfos']['browscap'] = array_map('io::htmlspecialchars', $browscap->getBrowser($_SERVER['HTTP_USER_AGENT'], true));
 		//get wurfl datas
 		$wurflConfigFile = PATH_MAIN_FS.'/wurfl/wurfl-config.xml';
 		$wurflConfig = new WURFL_Configuration_XmlConfig($wurflConfigFile);
 		$wurflManagerFactory = new WURFL_WURFLManagerFactory($wurflConfig);
 		$wurflManager = $wurflManagerFactory->create();	
 		$wurflInfo = $wurflManager->getWURFLInfo();
-		//echo 'VERSION : '.$wurflInfo->version."\n"; 
 		$requestingDevice = $wurflManager->getDeviceForHttpRequest($_SERVER);
-		$_SESSION['cms_ua']['browserInfos']['wurfl'] = $requestingDevice->getAllCapabilities();
+		$_SESSION['cms_ua']['browserInfos']['wurfl'] = array_map('io::htmlspecialchars', $requestingDevice->getAllCapabilities());
 		//check request
 		if (isset($_REQUEST['ua']) && is_array($_REQUEST['ua'])) {
 			foreach($_REQUEST['ua'] as $key => $value) {
 				if (isset($_SESSION['cms_ua']['browserInfos']['browscap'][$key])) {
-					$_SESSION['cms_ua']['browserInfos']['browscap'][$key] = $value;
+					$_SESSION['cms_ua']['browserInfos']['browscap'][$key] = io::htmlspecialchars($value);
 				}
 				if (isset($_SESSION['cms_ua']['browserInfos']['wurfl'][$key])) {
-					$_SESSION['cms_ua']['browserInfos']['wurfl'][$key] = $value;
+					$_SESSION['cms_ua']['browserInfos']['wurfl'][$key] = io::htmlspecialchars($value);
 				}
 			}
 		}
 		return $_SESSION['cms_ua']['browserInfos'];
 	}
 	
+	/**
+	  * Return the browser user agent info for the given info name
+	  * @param string $dataname the browser info to get
+	  *
+	  * @return string : the browser info
+	  * @access public
+	  */
 	function getBrowserInfo($dataname) {
 		$browserInfos = CMS_module_cms_ua::_getBrowserInfos();
 		switch ($dataname) {
@@ -235,18 +247,18 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 	  * @return string : the module code to add
 	  * @access public
 	  */
-	/*function getModuleCode($modulesCode, $treatmentMode, $visualizationMode, &$treatedObject, $treatmentParameters) {
+	function getModuleCode($modulesCode, $treatmentMode, $visualizationMode, &$treatedObject, $treatmentParameters) {
 		switch ($treatmentMode) {
 			case MODULE_TREATMENT_ROWS_EDITION_LABELS :
-				$modulesCode[MOD_CMS_PDF_CODENAME] = $treatmentParameters["language"]->getMessage(self::MESSAGE_MOD_CMS_PDF_EXPLANATION, false, MOD_CMS_PDF_CODENAME);
+				$modulesCode[MOD_CMS_UA_CODENAME] = $treatmentParameters["language"]->getMessage(self::MESSAGE_MOD_CMS_UA_EXPLANATION, false, MOD_CMS_UA_CODENAME);
 				return $modulesCode;
 			break;
 			case MODULE_TREATMENT_TEMPLATES_EDITION_LABELS :
-				$modulesCode[MOD_CMS_PDF_CODENAME] = $treatmentParameters["language"]->getMessage(self::MESSAGE_MOD_CMS_PDF_EXPLANATION, false, MOD_CMS_PDF_CODENAME);
+				$modulesCode[MOD_CMS_UA_CODENAME] = $treatmentParameters["language"]->getMessage(self::MESSAGE_MOD_CMS_UA_EXPLANATION, false, MOD_CMS_UA_CODENAME);
 				return $modulesCode;
 			break;
 		}
 		return $modulesCode;
-	}*/
+	}
 }
 ?>

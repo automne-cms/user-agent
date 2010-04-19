@@ -304,8 +304,14 @@ class Browscap
 		}
 
 		$this->_getRemoteIniFile($url, $ini_path);
-	
-		$browsers 			= parse_ini_file($ini_path, true);
+		
+		//avoid parsing bug in php 5.3
+		if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
+			$browsers = parse_ini_file($ini_path, true, INI_SCANNER_RAW);
+		}else{
+			$browsers = parse_ini_file($ini_path, true);
+		}
+		
 		array_shift($browsers);
 							
 		$this->_properties	= array_keys($browsers['DefaultProperties']);
@@ -344,7 +350,17 @@ class Browscap
 			
 			foreach ($browsers[$user_agent] as $key => $value) {
 				$key = $properties_keys[$key] . ".0";
-				$browser[$key] = $value;
+				switch($value){
+					case 'true':
+						$browser[$key] = true;
+					break;
+					case 'false':
+						$browser[$key] = false;
+					break;
+					default:
+						$browser[$key] = $value;
+					break;
+				}
 			}
 			
 			$this->_browsers[] = $browser;
