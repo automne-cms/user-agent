@@ -154,10 +154,10 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 			if (isset($_REQUEST['ua']) && is_array($_REQUEST['ua'])) {
 				foreach($_REQUEST['ua'] as $key => $value) {
 					if (isset($_SESSION['cms_ua']['browserInfos']['browscap'][$key])) {
-						$_SESSION['cms_ua']['browserInfos']['browscap'][$key] = io::htmlspecialchars($value);
+						$_SESSION['cms_ua']['browserInfos']['browscap'][$key] = $this->_cleanValue($value);
 					}
 					if (isset($_SESSION['cms_ua']['browserInfos']['wurfl'][$key])) {
-						$_SESSION['cms_ua']['browserInfos']['wurfl'][$key] = io::htmlspecialchars($value);
+						$_SESSION['cms_ua']['browserInfos']['wurfl'][$key] = $this->_cleanValue($value);
 					}
 				}
 			}
@@ -176,7 +176,7 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		//get Browscap datas
 		$browscap = new Browscap(PATH_CACHE_FS.'/browscap');
 		$browscap->silent = false;
-		$_SESSION['cms_ua']['browserInfos']['browscap'] = array_map('io::htmlspecialchars', $browscap->getBrowser($_SERVER['HTTP_USER_AGENT'], true));
+		$_SESSION['cms_ua']['browserInfos']['browscap'] = array_map(array('CMS_module_cms_ua', '_cleanValue'), $browscap->getBrowser($_SERVER['HTTP_USER_AGENT'], true));
 		//get wurfl datas
 		$wurflConfigFile = PATH_MAIN_FS.'/wurfl/wurfl-config.xml';
 		$wurflConfig = new WURFL_Configuration_XmlConfig($wurflConfigFile);
@@ -184,19 +184,44 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		$wurflManager = $wurflManagerFactory->create();	
 		$wurflInfo = $wurflManager->getWURFLInfo();
 		$requestingDevice = $wurflManager->getDeviceForHttpRequest($_SERVER);
-		$_SESSION['cms_ua']['browserInfos']['wurfl'] = array_map('io::htmlspecialchars', $requestingDevice->getAllCapabilities());
+		$_SESSION['cms_ua']['browserInfos']['wurfl'] = array_map(array('CMS_module_cms_ua', '_cleanValue'), $requestingDevice->getAllCapabilities());
 		//check request
 		if (isset($_REQUEST['ua']) && is_array($_REQUEST['ua'])) {
 			foreach($_REQUEST['ua'] as $key => $value) {
 				if (isset($_SESSION['cms_ua']['browserInfos']['browscap'][$key])) {
-					$_SESSION['cms_ua']['browserInfos']['browscap'][$key] = io::htmlspecialchars($value);
+					$_SESSION['cms_ua']['browserInfos']['browscap'][$key] = $this->_cleanValue($value);
 				}
 				if (isset($_SESSION['cms_ua']['browserInfos']['wurfl'][$key])) {
-					$_SESSION['cms_ua']['browserInfos']['wurfl'][$key] = io::htmlspecialchars($value);
+					$_SESSION['cms_ua']['browserInfos']['wurfl'][$key] = $this->_cleanValue($value);
 				}
 			}
 		}
 		return $_SESSION['cms_ua']['browserInfos'];
+	}
+	
+	/**
+	  * Return a clean browser value and change string true and false by boolean.
+	  * @param string $value the value to clean
+	  *
+	  * @return string : the browser infos
+	  * @access private
+	  */
+	private function _cleanValue($value) {
+		switch ($value) {
+			case 'true':
+				return true;
+			break;
+			case 'false':
+				return false;
+			break;
+			default:
+				if (is_string($value)) {
+					return io::htmlspecialchars($value);
+				} else {
+					return $value;
+				}
+			break;
+		}
 	}
 	
 	/**
