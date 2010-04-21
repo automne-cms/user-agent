@@ -154,10 +154,10 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 			if (isset($_REQUEST['ua']) && is_array($_REQUEST['ua'])) {
 				foreach($_REQUEST['ua'] as $key => $value) {
 					if (isset($_SESSION['cms_ua']['browserInfos']['browscap'][$key])) {
-						$_SESSION['cms_ua']['browserInfos']['browscap'][$key] = $this->_cleanValue($value);
+						$_SESSION['cms_ua']['browserInfos']['browscap'][$key] = CMS_module_cms_ua::_cleanValue($value);
 					}
 					if (isset($_SESSION['cms_ua']['browserInfos']['wurfl'][$key])) {
-						$_SESSION['cms_ua']['browserInfos']['wurfl'][$key] = $this->_cleanValue($value);
+						$_SESSION['cms_ua']['browserInfos']['wurfl'][$key] = CMS_module_cms_ua::_cleanValue($value);
 					}
 				}
 			}
@@ -189,10 +189,10 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		if (isset($_REQUEST['ua']) && is_array($_REQUEST['ua'])) {
 			foreach($_REQUEST['ua'] as $key => $value) {
 				if (isset($_SESSION['cms_ua']['browserInfos']['browscap'][$key])) {
-					$_SESSION['cms_ua']['browserInfos']['browscap'][$key] = $this->_cleanValue($value);
+					$_SESSION['cms_ua']['browserInfos']['browscap'][$key] = CMS_module_cms_ua::_cleanValue($value);
 				}
 				if (isset($_SESSION['cms_ua']['browserInfos']['wurfl'][$key])) {
-					$_SESSION['cms_ua']['browserInfos']['wurfl'][$key] = $this->_cleanValue($value);
+					$_SESSION['cms_ua']['browserInfos']['wurfl'][$key] = CMS_module_cms_ua::_cleanValue($value);
 				}
 			}
 		}
