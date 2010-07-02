@@ -4,8 +4,6 @@
 >	/automne/classes/modules/cms_ua/VERSION
 >	/automne/classes/modules/cms_ua/CHANGELOG
 >	/automne/classes/modules/cms_ua.php
->	/automne/classes/common/grandfather.php
->	/automne/classes/tree/pagetemplate.php
 >	/automne/wurfl/DeviceRepository.php
 >	/automne/wurfl/CapabilityService.php
 >	/automne/wurfl/Request/GenericRequest.php
