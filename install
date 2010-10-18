@@ -139,10 +139,10 @@
 >	/automne/wurfl/Reloader/DefaultWURFLReloader.php
 >	/automne/wurfl/Reloader/Interface.php
 >	/automne/wurfl/CustomDeviceRepository.php
->	/sql/messages/fr/cms_ua.sql
->	/sql/messages/en/cms_ua.sql
->	/sql/mod_cms_ua.sql
+>	/automne/sql/messages/fr/cms_ua.sql
+>	/automne/sql/messages/en/cms_ua.sql
+>	/automne/sql/mod_cms_ua.sql
 #Files to execute
-x	/sql/messages/fr/cms_ua.sql
-x	/sql/messages/en/cms_ua.sql
+x	/automne/sql/messages/fr/cms_ua.sql
+x	/automne/sql/messages/en/cms_ua.sql
 x	/cms_ua_install.php

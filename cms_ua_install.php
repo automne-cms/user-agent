@@ -13,8 +13,8 @@ $installed = $q->getNumRows() ? true : false;
 
 if (!$installed) {
 	echo "User Agent module installation : Not installed : Launch installation ...<br />";
-	if (CMS_patch::executeSqlScript(PATH_REALROOT_FS.'/sql/mod_cms_ua.sql',true)) {
-		CMS_patch::executeSqlScript(PATH_REALROOT_FS.'/sql/mod_cms_ua.sql',false);
+	if (CMS_patch::executeSqlScript(PATH_MAIN_FS.'/sql/mod_cms_ua.sql',true)) {
+		CMS_patch::executeSqlScript(PATH_MAIN_FS.'/sql/mod_cms_ua.sql',false);
 		echo "User Agent module installation : Installation done.<br /><br />";
 	} else {
 		echo "User Agent module installation : INSTALLATION ERROR ! Problem in SQL syntax (SQL tables file) ...<br />";
