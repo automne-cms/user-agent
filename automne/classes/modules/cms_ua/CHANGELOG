@@ -1,5 +1,6 @@
 v0.16
 [REFACTOR] : Add support for sub folder installation
+[BUG] : Handle Browscap and Wurfl exceptions
 
 v0.15
 [REFACTOR] : Adapt pathes structure to 4.1.0

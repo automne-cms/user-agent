@@ -176,15 +176,25 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		//get Browscap datas
 		$browscap = new Browscap(PATH_CACHE_FS.'/browscap');
 		$browscap->silent = false;
-		$_SESSION['cms_ua']['browserInfos']['browscap'] = array_map(array('CMS_module_cms_ua', '_cleanValue'), $browscap->getBrowser($_SERVER['HTTP_USER_AGENT'], true));
+		try {
+			$_SESSION['cms_ua']['browserInfos']['browscap'] = array_map(array('CMS_module_cms_ua', '_cleanValue'), $browscap->getBrowser($_SERVER['HTTP_USER_AGENT'], true));
+		} catch (Browscap_Exception $e) {
+			CMS_grandFather::raiseError($e->getMessage());
+			$_SESSION['cms_ua']['browserInfos']['browscap'] = array();
+		}
 		//get wurfl datas
-		$wurflConfigFile = PATH_MAIN_FS.'/wurfl/wurfl-config.xml';
-		$wurflConfig = new WURFL_Configuration_XmlConfig($wurflConfigFile);
-		$wurflManagerFactory = new WURFL_WURFLManagerFactory($wurflConfig);
-		$wurflManager = $wurflManagerFactory->create();	
-		$wurflInfo = $wurflManager->getWURFLInfo();
-		$requestingDevice = $wurflManager->getDeviceForHttpRequest($_SERVER);
-		$_SESSION['cms_ua']['browserInfos']['wurfl'] = array_map(array('CMS_module_cms_ua', '_cleanValue'), $requestingDevice->getAllCapabilities());
+		try {
+			$wurflConfigFile = PATH_MAIN_FS.'/wurfl/wurfl-config.xml';
+			$wurflConfig = new WURFL_Configuration_XmlConfig($wurflConfigFile);
+			$wurflManagerFactory = new WURFL_WURFLManagerFactory($wurflConfig);
+			$wurflManager = $wurflManagerFactory->create();	
+			$wurflInfo = $wurflManager->getWURFLInfo();
+			$requestingDevice = $wurflManager->getDeviceForHttpRequest($_SERVER);
+			$_SESSION['cms_ua']['browserInfos']['wurfl'] = array_map(array('CMS_module_cms_ua', '_cleanValue'), $requestingDevice->getAllCapabilities());
+		} catch (WURFL_WURFLException $e) {
+			CMS_grandFather::raiseError($e->getMessage());
+			$_SESSION['cms_ua']['browserInfos']['wurfl'] = array();
+		}
 		//check request
 		if (isset($_REQUEST['ua']) && is_array($_REQUEST['ua'])) {
 			foreach($_REQUEST['ua'] as $key => $value) {
