@@ -85,7 +85,7 @@ abstract class WURFL_Handlers_Handler implements WURFL_Handlers_Filter, WURFL_Ha
 	 */
 	function filter($userAgent, $deviceID) {
 		if ($this->canHandle ( $userAgent )) {
-			$this->updateUserAgentsWithDeviceIDMap ( $userAgent, $deviceID );
+			$this->updateUserAgentsWithDeviceIDMap ( $this->normalizeUserAgent($userAgent), $deviceID );
 			return;
 		}
 		if (isset ( $this->nextHandler )) {
@@ -168,7 +168,7 @@ abstract class WURFL_Handlers_Handler implements WURFL_Handlers_Filter, WURFL_Ha
 	 * @return string
 	 */
 	function applyMatch(WURFL_Request_GenericRequest $request) {
-		$userAgent = $request->userAgent;
+		$userAgent = $this->normalizeUserAgent ( $request->userAgent );
 		$this->logger->debug ( "START: Matching For  " . $userAgent );
 		
 		// Get The data associated with this current handler
@@ -186,19 +186,19 @@ abstract class WURFL_Handlers_Handler implements WURFL_Handlers_Filter, WURFL_Ha
 		$this->logger->debug ( "$this->prefix :Applying Conclusive Match for ua: $userAgent" );
 		$deviceID = $this->applyConclusiveMatch ( $userAgent );
 		
-		if ($this->isBlankOrGeneric($deviceID)) {
+		if ($this->isBlankOrGeneric ( $deviceID )) {
 			// Log the ua and the ua profile
 			//$this->logger->debug ( $request );
 			$this->logger->debug ( "$this->prefix :Applying Recovery Match for ua: $userAgent" );
 			$deviceID = $this->applyRecoveryMatch ( $userAgent );
 		}
 		// Try with catch all recovery Match
-		if ($this->isBlankOrGeneric($deviceID)) {
+		if ($this->isBlankOrGeneric ( $deviceID )) {
 			$this->logger->debug ( "$this->prefix :Applying Catch All Recovery Match for ua: $userAgent" );
 			$deviceID = $this->applyRecoveryCatchAllMatch ( $userAgent );
 		}
 		
-		if ($this->isBlankOrGeneric($deviceID)) {
+		if ($this->isBlankOrGeneric ( $deviceID )) {
 			$deviceID = WURFL_Constants::GENERIC;
 		}
 		
@@ -212,7 +212,6 @@ abstract class WURFL_Handlers_Handler implements WURFL_Handlers_Filter, WURFL_Ha
 	private function isBlankOrGeneric($deviceID) {
 		return $deviceID == NULL || strcmp ( $deviceID, "generic" ) === 0 || strlen ( trim ( $deviceID ) ) == 0;
 	}
-
 	
 	/**
 	 
@@ -220,7 +219,6 @@ abstract class WURFL_Handlers_Handler implements WURFL_Handlers_Filter, WURFL_Ha
 	 * @return string
 	 */
 	function applyConclusiveMatch($userAgent) {
-		$userAgent = $this->normalizeUserAgent ($userAgent );		
 		$match = $this->lookForMatchingUserAgent ( $userAgent );
 		
 		if (! empty ( $match )) {
@@ -246,6 +244,68 @@ abstract class WURFL_Handlers_Handler implements WURFL_Handlers_Filter, WURFL_Ha
 		return WURFL_Handlers_Utils::risMatch ( $userAgetsList, $target, $tollerance );
 	}
 	
+	
+	private $catchAllIds = array(
+		 // Openwave
+            "UP.Browser/7.2" => "opwv_v72_generic",
+            "UP.Browser/7" => "opwv_v7_generic",
+            "UP.Browser/6.2" => "opwv_v62_generic",
+            "UP.Browser/6" => "opwv_v6_generic",
+            "UP.Browser/5" => "upgui_generic",
+            "UP.Browser/4" => "uptext_generic",
+            "UP.Browser/3" => "uptext_generic",
+
+
+            // Series 60
+            "Series60" => "nokia_generic_series60",
+
+            // Access/Net Front
+            "NetFront/3.0" => "generic_netfront_ver3",
+            "ACS-NF/3.0" => "generic_netfront_ver3",
+            "NetFront/3.1" => "generic_netfront_ver3_1",
+            "ACS-NF/3.1" => "generic_netfront_ver3_1",
+            "NetFront/3.2" => "generic_netfront_ver3_2",
+            "ACS-NF/3.2" => "generic_netfront_ver3_2",
+            "NetFront/3.3" => "generic_netfront_ver3_3",
+            "ACS-NF/3.3" => "generic_netfront_ver3_3",
+            "NetFront/3.4" => "generic_netfront_ver3_4",
+            "NetFront/3.5" => "generic_netfront_ver3_5",
+            "NetFront/4.0" => "generic_netfront_ver4",
+            "NetFront/4.1" => "generic_netfront_ver4_1",
+
+
+            // Windows CE
+            "Windows CE" => "generic_ms_mobile",
+
+
+            // web browsers?
+            "Mozilla/4.0" => "generic_web_browser",
+            "Mozilla/5.0" => "generic_web_browser",
+            "Mozilla/5.0" => "generic_web_browser",
+
+            // Generic XHTML
+            "Mozilla/" => WURFL_Constants::GENERIC_XHTML,
+            "ObigoInternetBrowser/Q03C"=> WURFL_Constants::GENERIC_XHTML,
+           	"AU-MIC/2"=> WURFL_Constants::GENERIC_XHTML,
+	        "AU-MIC-"=>  WURFL_Constants::GENERIC_XHTML,
+            "AU-OBIGO/"=>  WURFL_Constants::GENERIC_XHTML,
+            "Obigo/Q03"=>  WURFL_Constants::GENERIC_XHTML,
+            "Obigo/Q04" =>  WURFL_Constants::GENERIC_XHTML,
+            "ObigoInternetBrowser/2"=>  WURFL_Constants::GENERIC_XHTML,
+            "Teleca Q03B1"=>  WURFL_Constants::GENERIC_XHTML,
+
+
+            // Opera Mini
+            "Opera Mini/1" => "browser_opera_mini_release1",
+            "Opera Mini/2" => "browser_opera_mini_release2",
+            "Opera Mini/3" => "browser_opera_mini_release3",
+            "Opera Mini/4" => "browser_opera_mini_release4",
+            "Opera Mini/5" => "browser_opera_mini_release5",
+
+            // DoCoMo
+            "DoCoMo" => "docomo_generic_jap_ver1",
+            "KDDI" => "docomo_generic_jap_ver1",
+	);
 	/**
 	 * Applies Recovery Match
 	 *
@@ -255,86 +315,10 @@ abstract class WURFL_Handlers_Handler implements WURFL_Handlers_Filter, WURFL_Ha
 	}
 	
 	function applyRecoveryCatchAllMatch($userAgent) {
-		
-		//Openwave
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "UP.Browser/7.2" )) {
-			return "opwv_v72_generic";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "UP.Browser/7" )) {
-			return "opwv_v7_generic";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "UP.Browser/6.2" )) {
-			return "opwv_v62_generic";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "UP.Browser/6.1" )) {
-			return "opwv_v6_generic";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "UP.Browser/6" )) {
-			return "opwv_v6_generic";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "UP.Browser/5" )) {
-			return "upgui_generic";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "UP.Browser/4" )) {
-			return "uptext_generic";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "UP.Browser/3" )) {
-			return "uptext_generic";
-		}
-		
-		//Series 60
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Series60" )) {
-			return "nokia_generic_series60";
-		}
-		
-		// Access/Net Front
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "NetFront/3.0" ) || WURFL_Handlers_Utils::checkIfContains ( $userAgent, "ACS-NF/3.0" )) {
-			return "netfront_ver3";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "NetFront/3.1" ) || WURFL_Handlers_Utils::checkIfContains ( $userAgent, "ACS-NF/3.1" )) {
-			return "netfront_ver3_1";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "NetFront/3.2" ) || WURFL_Handlers_Utils::checkIfContains ( $userAgent, "ACS-NF/3.2" )) {
-			return "netfront_ver3_2";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "NetFront/3.3" ) || WURFL_Handlers_Utils::checkIfContains ( $userAgent, "ACS-NF/3.3" )) {
-			return "netfront_ver3_3";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "NetFront/3.4" )) {
-			return "netfront_ver3_4";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "NetFront/3.5" )) {
-			return "netfront_ver3_5";
-		}
-		
-		//Windows CE
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Windows CE" )) {
-			return "ms_mobile_browser_ver1";
-		}
-		
-		/**
-		 * Teleca-Obigo Browser
-		 */
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "ObigoInternetBrowser/Q03C" ) || WURFL_Handlers_Utils::checkIfContains ( $userAgent, "AU-MIC/2" ) || WURFL_Handlers_Utils::checkIfContains ( $userAgent, "AU-MIC-" ) || WURFL_Handlers_Utils::checkIfContains ( $userAgent, "AU-OBIGO/" ) || WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Obigo/Q03" ) || WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Obigo/Q04" ) || WURFL_Handlers_Utils::checkIfContains ( $userAgent, "ObigoInternetBrowser/2" ) || WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Teleca Q03B1" )) {
-			return WURFL_Constants::GENERIC_XHTML;
-		}
-		
-		//web browsers?
-		$mozzilas = array ("Mozilla/4", "Mozilla/5", "Mozilla/6" );
-		if (WURFL_Handlers_Utils::checkIfStartsWithOneOf ( $userAgent, $mozzilas )) {
-			return "generic_web_browser";
-		}
-		
-		/**
-		 * Mozilla of some kind
-		 */
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Mozilla" )) {
-			return WURFL_Constants::GENERIC_XHTML;
-		}
-		
-		// DoCoMo
-		if ((strpos ( $userAgent, "DoCoMo" ) === 0) || (strpos ( $userAgent, "KDDI" ) === 0)) {
-			return "docomo_generic_jap_ver1";
+		foreach ($this->catchAllIds as $key => $deviceId) {
+			if(WURFL_Handlers_Utils::checkIfContains($userAgent, $key)) {
+				return $deviceId;
+			}
 		}
 		
 		return WURFL_Constants::GENERIC;
@@ -343,7 +327,17 @@ abstract class WURFL_Handlers_Handler implements WURFL_Handlers_Filter, WURFL_Ha
 	public function getPrefix() {
 		return $this->prefix . "_DEVICEIDS";
 	}
+	
+	/**
+	 * @param deviceId
+	 */
+	protected function isDeviceExist($deviceId) {
+		$ids = array_values ( $this->userAgentsWithDeviceID );
+		if (in_array ( $deviceId, $ids )) {
+			return true;
+		}
+		return false;
+	}
 
 }
 
-?>

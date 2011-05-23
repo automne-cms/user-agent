@@ -40,4 +40,3 @@ class WURFL_Handlers_SendoHandler extends WURFL_Handlers_Handler {
 	
 	protected $prefix = "SENDO";
 }
-?>

@@ -51,4 +51,3 @@ class WURFL_Configuration_ConfigHolder {
 
 }
 
-?>

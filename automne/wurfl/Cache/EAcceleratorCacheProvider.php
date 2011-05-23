@@ -9,7 +9,7 @@
  *
  * Copyright (c) 2008-2009, WURFL-Pro S.r.l., Rome, Italy
  * 
- *  
+ * 
  *
  * @category   WURFL
  * @package    WURFL_Cache
@@ -17,7 +17,6 @@
  * @license
  * @version    $id$
  */
-
 
 /**
  * EAcceleratorCacheProvider
@@ -32,17 +31,24 @@
  * @version    $id$
  */
 class WURFL_Cache_EAcceleratorCacheProvider implements WURFL_Cache_CacheProvider {
-
-	function get($key) {
-		return eaccelerator_get($key);
+	
+	private $expire;
+	
+	function __construct($params) {
+		if (is_array ( $params )) {
+			$this->expire = isset ( $params [WURFL_Cache_CacheProvider::EXPIRATION] ) ? $params [WURFL_Cache_CacheProvider::EXPIRATION] : WURFL_Cache_CacheProvider::NEVER;
+		}
 	}
-
+	
+	function get($key) {
+		return eaccelerator_get ( $key );
+	}
+	
 	function put($key, $value) {
-		eaccelerator_put($key, $value);
+		eaccelerator_put ( $key, $value, $this->expire );
 	}
 	
 	function clear() {
 	}
 }
 
-?>

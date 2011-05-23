@@ -8,35 +8,31 @@
  * COPYING file distributed with this package.
  *
  * Copyright (c) 2008-2009, WURFL-Pro S.r.l., Rome, Italy
- * 
- *  
+ *
+ *
  *
  * @category   WURFL
- * @package    WURFL_Request_UserAgentNormalizer
+ * @package    WURFL_Request_UserAgentNormalizer_Generic
  * @copyright  WURFL-PRO SRL, Rome, Italy
  * @license
+ * @author     Fantayeneh Asres Gizaw
  * @version    $id$
  */
+class WURFL_Request_UserAgentNormalizer_Generic_UPLink implements WURFL_Request_UserAgentNormalizer_Interface  {
 
-
-class WURFL_Request_UserAgentNormalizer_MSIE implements WURFL_Request_UserAgentNormalizer_Interface  {
-
-	
-	
 	/**
-	 * Return MSIE String with the Major and Minor Version Only.
+	 * This method remove the "UP.Link" substring from user agent string.
+	 *
 	 * @param string $userAgent
 	 * @return string
 	 */
 	public function normalize($userAgent) {
-		return $this->msieWithVersion($userAgent);				
-	}
-	
-	private function msieWithVersion($userAgent) {
-		return substr($userAgent, strpos($userAgent, "MSIE"), 8);
+		$index = strpos($userAgent, " UP.Link");
+		if ($index > 0) {
+			return substr($userAgent, 0, $index);
+		}
+		return $userAgent;
 	}
 
 }
 
-
-?>

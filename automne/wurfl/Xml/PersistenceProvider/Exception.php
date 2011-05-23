@@ -20,4 +20,3 @@
 class WURFL_Xml_PersistenceProvider_Exception extends WURFL_WURFLException {
 }
 
-?>

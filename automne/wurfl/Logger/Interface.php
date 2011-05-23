@@ -24,4 +24,3 @@ interface WURFL_Logger_Interface {
 	function debug($message);
 }
 
-?>

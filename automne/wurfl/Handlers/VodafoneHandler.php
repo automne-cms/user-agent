@@ -51,11 +51,9 @@ class WURFL_Handlers_VodafoneHandler extends WURFL_Handlers_Handler {
 	 * @param string $userAgent
 	 */
 	function lookForMatchingUserAgent($userAgent) {	
-		$userAgents = array_keys ( $this->userAgentsWithDeviceID );				
 		$tolerance = WURFL_Handlers_Utils::ordinalIndexOf($userAgent, "/", 3);		
 		return WURFL_Handlers_Utils::risMatch(array_keys($this->userAgentsWithDeviceID), $userAgent, $tolerance);
 	}
 
 }
 
-?>

@@ -37,7 +37,6 @@ class WURFL_Handlers_LGHandler extends WURFL_Handlers_Handler {
 	}
 	
 	/**
-	 * Intercept all UAs starting with "LG"
 	 *
 	 * @param string $userAgent
 	 * @return string
@@ -52,24 +51,11 @@ class WURFL_Handlers_LGHandler extends WURFL_Handlers_Handler {
 	 * @return string
 	 */
 	function lookForMatchingUserAgent($userAgent) {
-		if ($this->isVodafone ( $userAgent )) {
-			$tolerance = WURFL_Handlers_Utils::ordinalIndexOf($userAgent, "LG", 1);
-		}
-		if (WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "LG/" ) || WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "LGE/" )) {
-			$tolerance = WURFL_Handlers_Utils::secondSlash ( $userAgent );
-		} else {
-			$tolerance = WURFL_Handlers_Utils::firstSlash ( $userAgent );
-		}
+        $tolerance = WURFL_Handlers_Utils::indexOfOrLength($userAgent, "/", strpos ( $userAgent, "LG" ) );
+        $userAgents = array_keys ( $this->userAgentsWithDeviceID );
+        return parent::applyRisWithTollerance ( $userAgents, $userAgent, $tolerance );
+
+	}
 		
-		return WURFL_Handlers_Utils::risMatch ( array_keys ( $this->userAgentsWithDeviceID ), $userAgent, $tolerance );
-	}
-	
-	
-	private function isVodafone($userAgent) {
-		return WURFL_Handlers_Utils::checkIfStartsWith($userAgent, "Vodafone");
-	}
-	
-	
 
 }
-?>

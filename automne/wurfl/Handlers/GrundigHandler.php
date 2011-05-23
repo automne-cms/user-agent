@@ -46,4 +46,3 @@ class WURFL_Handlers_GrundigHandler extends WURFL_Handlers_Handler {
 	
 	protected $prefix = "GRUNDIG";
 }
-?>

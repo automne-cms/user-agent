@@ -25,7 +25,7 @@ class WURFL_Cache_NullCacheProvider implements WURFL_Cache_CacheProvider  {
 		return NULL;
 	}
 	
-	public function put($key, $value) {
+	public function put($key, $value, $expire=0) {
 	}
 	
 	public function clear() {
@@ -34,4 +34,3 @@ class WURFL_Cache_NullCacheProvider implements WURFL_Cache_CacheProvider  {
 	
 }
 
-?>

@@ -45,4 +45,5 @@ class WURFL_ClassLoader {
 
 }
 
-?>
+// register class loader
+spl_autoload_register ( array ('WURFL_ClassLoader', 'loadClass' ) );

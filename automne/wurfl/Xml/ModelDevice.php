@@ -28,16 +28,19 @@ class WURFL_Xml_ModelDevice {
 	private $fallBack;
 	private $userAgent;
 	private $actualDeviceRoot;
+	private $specific;
 	private $capabilities = array();
 	private $groupIdCapabilitiesNameMap = array();
 	
 	
-	function __construct($id, $userAgent, $fallBack, $actualDeviceRoot,
+	function __construct($id, $userAgent, $fallBack, $actualDeviceRoot=false, $specific=false,
 	$groupIdCapabilitiesMap = null) {
+		
 		$this->id = $id;
 		$this->userAgent = $userAgent;
-		$this->fallBack = $fallBack;
-		$this->actualDeviceRoot = $actualDeviceRoot;
+		$this->fallBack = $fallBack; 
+		$this->actualDeviceRoot = $actualDeviceRoot == true ? true : false;
+		$this->specific = $specific == true ? true : false;
 		if (is_array($groupIdCapabilitiesMap)) {
 			foreach ($groupIdCapabilitiesMap as $groupId => $capabilitiesNameValue) {
 				$this->groupIdCapabilitiesNameMap[$groupId] = array_keys($capabilitiesNameValue); 
@@ -46,11 +49,32 @@ class WURFL_Xml_ModelDevice {
 			
 		}
 	}
-
+ 
 	function __get($name) {
 		return $this->$name;
 	}
+
+
+    function getCapabilities() {
+        return $this->capabilities;
+    }
+
+    function getGroupIdCapabilitiesNameMap() {
+        return $this->groupIdCapabilitiesNameMap;
+    }
+    
+
+	function getCapability($capabilityName) {
+		if(isset($this->capabilities[$capabilityName])) {
+			return $this->capabilities[$capabilityName];
+		}
+		
+		return NULL;
+	}
 	
+	function isCapabilityDefined($capabilityName) {
+		return array_key_exists($capabilityName, $this->capabilities);
+	}
 	
 	function getGroupIdCapabilitiesMap() {
 		$groupIdCapabilitiesMap = array();
@@ -64,15 +88,11 @@ class WURFL_Xml_ModelDevice {
 		
 	}
 	
+	
 	function isGroupDefined($groupId) {
-		return array_key_exists($groupId);
+		return array_key_exists($groupId, $this->groupIdCapabilitiesNameMap);
 	}
 	
-	
-	function isCapabilitiesDefinedInGroup($capabilitiesName, $groupId) {
-		//return array_d
-	}
 	
 }
 
-?>

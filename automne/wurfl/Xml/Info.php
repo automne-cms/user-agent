@@ -20,7 +20,7 @@
  */
 class WURFL_Xml_Info {
 
-	const PERSISTENCE_KEY = "WURFL_XML_INFO";
+	const PERSISTENCE_KEY = "WURFL_XML_INFO";	
 	private $version;
 	private $lastUpdated;
 	private $officialURL;
@@ -34,5 +34,9 @@ class WURFL_Xml_Info {
 	public function __get($name) {
 		return $this->$name;
 	} 
+	
+	public static function noInfo() {
+		return new WURFL_Xml_Info("", "", "");
+	}
 	
 }

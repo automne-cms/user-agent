@@ -8,8 +8,8 @@
  * COPYING file distributed with this package.
  *
  * Copyright (c) 2008-2009, WURFL-Pro S.r.l., Rome, Italy
- * 
- *  
+ *
+ *
  *
  * @category   WURFL
  * @package    WURFL_Configuration
@@ -19,155 +19,90 @@
  */
 class WURFL_Configuration_XmlConfig extends WURFL_Configuration_Config {
 
-	
-	
-	private $logDir = ".";
-	
 
-	private $stack = array();
-	private $persistenceOrCache = array();
-	
-	
-	
-	/**
-	 * Constructor
-	 *
-	 * @param string $confLocation
-	 */
-	function __construct($configFilePath) {
-		parent::__construct($configFilePath);
-	}
-	
-	
-	
-	/**
-	 * Reads the configuration file and creates the class attributes
-	 *
-	 */
-	protected  function initialize(){
-		
-		$reader = new XMLReader();
-		$reader->open(parent::getConfigFilePath());
+    private $configurationDir;
 
-		$reader->setRelaxNGSchemaSource(self::WURFL_CONF_SCHEMA);
-		
-	
-		libxml_use_internal_errors(TRUE);
-
-		
-		while ($reader->read()) {
-			if(!$reader->isValid()) {
-				throw new Exception(libxml_get_last_error()->message);
-			}
-			$name = $reader->name;
-			switch ($reader->nodeType) {
-				case XMLReader::ELEMENT:
-					$this->_handleStartElement($name);
-					break;
-				case XMLReader::TEXT:
-					$this->_handleTextElement($reader->value);
-					break;
-				case XMLReader::END_ELEMENT:
-					$this->_handleEndElement($name);
-					break;
-			}
-		}
-		
-		$reader->close();
-		
-		if (isset($this->cache["dir"])) {
-			$this->logDir = $this->cache["dir"];
-		}
-		
-		
-		
-		
-	}
-
-	/**
-	 * Handles the start of an element
-	 *
-	 * @param string $name
-	 */
-	private function _handleStartElement($name) {
-		array_push($this->stack, $name);
-	}
-
-	/**
-	 * Handles Text Element
-	 *
-	 * @param array $stack
-	 * @param string $name
-	 * @param string $value
-	 */
-	private function _handleTextElement($value) {
-		$currentElement = $this->array_peek($this->stack);
-		switch ($currentElement) {
-			case WURFL_Configuration_Config::MAIN_FILE:				
-				$this->wurflFile = parent::getFullPath($value);
-				break;
-			case WURFL_Configuration_Config::PATCH:
-				$this->wurflPatches[] = parent::getFullPath($value);
-				break;
-			case WURFL_Configuration_Config::PROVIDER:
-				$this->persistenceOrCache["provider"] = $value;
-				break;
-			case WURFL_Configuration_Config::PARAMS:
-				$this->persistenceOrCache = array_merge($this->persistenceOrCache, $this->_toArray($value));
-				break;
-		}
-
-	}
-
-	/**
-	 * Handles the end of the element
-	 *
-	 * @param string $name
-	 */
-	private function _handleEndElement($name) {
-		switch ($name) {
-			case WURFL_Configuration_Config::PERSISTENCE:
-				$this->persistence = $this->persistenceOrCache;
-			case WURFL_Configuration_Config::CACHE:
-				$this->cache = $this->persistenceOrCache;
-				break;
-		}
-		
-		array_pop($this->stack);
-		
-	}
+    /**
+     * Constructor
+     *
+     * @param string $confLocation
+     */
+    function __construct($configFilePath) {
+        $this->configurationDir = dirname($configFilePath);
+        $this->initialize($configFilePath);
+    }
 
 
-	//************************* Utility Functions ********************************//
-	
-	private function _toArray($params) {
-		$paramsArray = array();
-		
-		foreach (explode(",", $params) as $param) {
-			$paramNameValue = explode("=", $param);
-			
-			if(strcmp(WURFL_Configuration_Config::DIR, $paramNameValue[0]) == 0) {
-				$paramNameValue[1] = parent::getFullPath($paramNameValue[1]);
-			}
-			
-			$paramsArray[$paramNameValue[0]] = $paramNameValue[1];
-		}
+    protected function initialize($configurationFilePath) {
+        $xmlConfig = simplexml_load_file($configurationFilePath);
+        $this->wurflFile = $this->wurflFile($xmlConfig->xpath("/wurfl-config/wurfl/main-file"));
+        $this->wurflPatches = $this->wurflPatches($xmlConfig->xpath("/wurfl-config/wurfl/patches/patch"));
+        $this->allowReload = $this->allowReload($xmlConfig->xpath('/wurfl-config/allow-reload'));
+        $this->persistence = $this->persistence($xmlConfig->xpath('/wurfl-config/persistence'));
+        $this->cache = $this->persistence($xmlConfig->xpath('/wurfl-config/cache'));
+    }
 
-		
-		return $paramsArray;
-	}
+    private function wurflFile($maiFileElement) {
+        return $this->fullPath((string) $maiFileElement[0]);
+    }
 
-	private function array_peek(array &$array) {
-		$var = array_pop($array);
-		array_push($array, $var);
-		return $var;
-	}
-	
-	
-	
+    private function wurflPatches($patchElements) {
+        $patches = array();
+        if ($patchElements) {
+            foreach ($patchElements as $patchElement) {
+                $patches[] = $this->fullPath((string) $patchElement);
+            }
+        }
+        return $patches;
+    }
+
+    private function allowReload($allowReloadElement) {
+        if (!empty($allowReloadElement)) {
+            return (bool) $allowReloadElement[0];
+        }
+        return false;
+    }
+
+    private function persistence($persistenceElement) {
+        $persistence = array();
+        if ($persistenceElement) {
+            $persistence["provider"] = (string)$persistenceElement[0]->provider;
+            $persistence["params"] = $this->_toArray((string)$persistenceElement[0]->params);
+        }
+        return $persistence;
+    }
 
 
-	const  WURFL_CONF_SCHEMA = '<?xml version="1.0" encoding="utf-8" ?>
+
+    //************************* Utility Functions ********************************//
+
+    private function fullPath($path) {
+        if(realpath($path) && !(basename($path) === $path )) {
+            return realpath($path);
+        }
+
+        return join(DIRECTORY_SEPARATOR, array($this->configurationDir, $path));
+    }
+
+    private function _toArray($params) {
+        $paramsArray = array();
+
+        foreach (explode(",", $params) as $param) {
+            $paramNameValue = explode("=", $param);
+            if(count($paramNameValue) > 1) {
+                if (strcmp(WURFL_Configuration_Config::DIR, $paramNameValue[0]) == 0) {
+                    $paramNameValue[1] = $this->fullPath($paramNameValue[1]);
+                }
+                $paramsArray[trim($paramNameValue[0])] = trim($paramNameValue[1]);                                
+            }
+        }
+
+
+        return $paramsArray;
+    }
+
+ 
+    const  WURFL_CONF_SCHEMA = '<?xml version="1.0" encoding="utf-8" ?>
 	<element name="wurfl-config" xmlns="http://relaxng.org/ns/structure/1.0">
     	<element name="wurfl">
     		<element name="main-file"><text/></element>
@@ -177,6 +112,9 @@ class WURFL_Configuration_XmlConfig extends WURFL_Configuration_Config {
     			</zeroOrMore>
   			</element>
   		</element>
+        <optional>
+  		    <element name="allow-reload"><text/></element>
+        </optional>
   		<element name="persistence">
       		<element name="provider"><text/></element>
       		<optional>
@@ -190,5 +128,7 @@ class WURFL_Configuration_XmlConfig extends WURFL_Configuration_Config {
       		</optional>
   		</element>
 	</element>';
+
 }
+
 ?>

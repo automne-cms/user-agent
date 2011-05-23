@@ -15,7 +15,7 @@ Please look sample of the configuration files in examples/resources directory .
 define("WURFL_DIR", 	dirname(__FILE__) . '/../../../WURFL/'); // WURFL INSTALLATION DIR
 define("RESOURCES_DIR", dirname(__FILE__) . "/../../resources/"); // DIRECTORY WHERE YOU PUT YOUR CONFIGURATION FILES
 
-require_once WURFL_DIR. 'WURFLManagerFactory.php';
+require_once WURFL_DIR. 'Application.php';
 
 $wurflConfigFile = RESOURCES_DIR . 'wurfl-config.xml';
 $wurflConfig = new WURFL_Configuration_XmlConfig($wurflConfigFile);
@@ -63,19 +63,24 @@ $device->getCapability("capabilityName");
 		Please refer to the links for further information how to install and enable 
 		the modules.
 		
+		N.B You can also configure the expiration time for the items in the cache.
+		
+		
 		
 		1.1 From Configuration FILE(Xml File)
 		====================================
 			$wurflConfigFile = RESOURCES_DIR . 'wurfl-config.xml';
-			$wurflConfig = new WURFL_Configuration_XmlConfig($wurflConfig);
+			$wurflConfig = new WURFL_Configuration_XmlConfig($wurflConfigFile);
 
 		
 		1.2 Programtically
 		================================
-    	 	$config = new WURFL_Configuration_InMemoryConfig();
-			$config->wurflFile($resourcesDir ."/wurfl-regression.xml")
-				->wurflPatch($resourcesDir ."/web_browsers_patch.xml")
-				->persistence("memcache", array("host"=> "127.0.0.1", "port"=>"11211"));
+    	 	$cacheDir = RESOURCES_DIR . "cache";
+			$wurflConfig = new WURFL_Configuration_InMemoryConfig ();
+			$wurflConfig->wurflFile ( RESOURCES_DIR . "wurfl-regression.zip" )
+				->wurflPatch ( RESOURCES_DIR . "web_browsers_patch.xml" )
+				->persistence ( "file", array(WURFL_Configuration_Config::DIR=>$cacheDir ))
+				->cache ( "file", array (WURFL_Configuration_Config::DIR => $cacheDir, WURFL_Configuration_Config::EXPIRATION => 36000 ));
 
 2) 
 	- Add  a require_once to  'WURFL_Installation/WURFL/WURFLManagerFactory.php'; 

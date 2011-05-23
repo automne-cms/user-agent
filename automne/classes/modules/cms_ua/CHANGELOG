@@ -1,3 +1,9 @@
+0.20
+[BUG] : Coorect an update problem for Browscap
+[REFACTOR] : Handle new Automne 4.1 replacement system : tag atm-ua and atm-ua-if is no more needed : all replacements can be done anywhere and classic atm-if tag can be used
+[REFACTOR] : Update WURFL database to version 2.0.27
+[REFACTOR] : Update PHP WURFL library to 1.2.1
+
 v0.16
 [REFACTOR] : Add support for sub folder installation
 [BUG] : Handle Browscap and Wurfl exceptions

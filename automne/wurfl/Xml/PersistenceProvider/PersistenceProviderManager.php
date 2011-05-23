@@ -36,8 +36,9 @@ class WURFL_Xml_PersistenceProvider_PersistenceProviderManager {
 	
 	private static function _initialize($persistenceConfig) {
     	
-    	$persistenceParams = is_null($persistenceConfig) ? WURFL_Configuration_ConfigHolder::getWURFLConfig()->persistence : $persistenceConfig;
-		$provider = $persistenceParams ["provider"];
+    	$persistenceConfig = is_null($persistenceConfig) ? WURFL_Configuration_ConfigHolder::getWURFLConfig()->persistence : $persistenceConfig;
+		$provider = $persistenceConfig ["provider"];
+		$persistenceParams = isset($persistenceConfig["params"]) ? $persistenceConfig["params"] : array();
 		
 		switch ($provider) {
 			case WURFL_Constants::MEMCACHE :
@@ -49,6 +50,10 @@ class WURFL_Xml_PersistenceProvider_PersistenceProviderManager {
 			case WURFL_Constants::MYSQL :
 				self::$_persistenceProvider = new WURFL_Xml_PersistenceProvider_MysqlPersistenceProvider ( $persistenceParams );
 				break;
+			case WURFL_Xml_PersistenceProvider_InMemoryPersistenceProvider::IN_MEMORY :
+				self::$_persistenceProvider = new WURFL_Xml_PersistenceProvider_InMemoryPersistenceProvider ( $persistenceParams );
+				break;
+				
 			default :
 				self::$_persistenceProvider = new WURFL_Xml_PersistenceProvider_FilePersistenceProvider ( $persistenceParams );
 				break;

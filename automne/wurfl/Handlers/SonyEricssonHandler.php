@@ -60,9 +60,8 @@ class WURFL_Handlers_SonyEricssonHandler extends WURFL_Handlers_Handler {
 			return WURFL_Handlers_Utils::risMatch ( array_keys ( $this->userAgentsWithDeviceID ), $userAgent, $tollerance );
 		}
 		$tollerance = WURFL_Handlers_Utils::secondSlash ( $userAgent );
-		return WURFL_Handlers_Utils::ldMatch ( array_keys ( $this->userAgentsWithDeviceID ), $userAgent, $tollerance );
+		return WURFL_Handlers_Utils::risMatch ( array_keys ( $this->userAgentsWithDeviceID ), $userAgent, $tollerance );
 	
 	}
 
 }
-?>

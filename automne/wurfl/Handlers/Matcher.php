@@ -41,4 +41,3 @@ interface WURFL_Handlers_Matcher {
 	
 }
 
-?>

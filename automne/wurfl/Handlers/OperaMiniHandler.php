@@ -19,7 +19,7 @@
  */
 
 /**
- * OperaHanlder
+ * OperaHandlder
  *
  *
  * @category   WURFL
@@ -29,36 +29,40 @@
  * @version    $id$
  */
 class WURFL_Handlers_OperaMiniHandler extends WURFL_Handlers_Handler {
-	
-	protected $prefix = "OPERA_MINI";
-	
-	function __construct($wurflContext, $userAgentNormalizer = null) {
-		parent::__construct ( $wurflContext, $userAgentNormalizer );
-	}
-	
-	/**
-	 * Intercept all UAs Containing Opera Mini
-	 *
-	 * @param string $userAgent
-	 * @return boolean
-	 */
-	public function canHandle($userAgent) {
-		return WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Opera Mini" );
-	}
-	
-	function applyRecoveryMatch($userAgent) {
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Opera Mini/1" )) {
-			return "opera_mini_ver1";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Opera Mini/2" )) {
-			return "opera_mini_ver2";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Opera Mini/3" )) {
-			return "opera_mini_ver3";
-		}
-		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Opera Mini/4" )) {
-			return "opera_mini_ver4";
-		}
-	}
+
+    protected $prefix = "OPERA_MINI";
+
+    function __construct($wurflContext, $userAgentNormalizer = null) {
+        parent::__construct($wurflContext, $userAgentNormalizer);
+    }
+
+    /**
+     * Intercept all UAs Containing Opera Mini
+     *
+     * @param string $userAgent
+     * @return boolean
+     */
+    public function canHandle($userAgent) {
+        return WURFL_Handlers_Utils::checkIfContains($userAgent, "Opera Mini");
+    }
+
+    private $operaMinis = array(
+        "Opera Mini/1" => "browser_opera_mini_release1",
+        "Opera Mini/2" => "browser_opera_mini_release2",
+        "Opera Mini/3" => "browser_opera_mini_release3",
+        "Opera Mini/4" => "browser_opera_mini_release4",
+        "Opera Mini/5" => "browser_opera_mini_release5"
+    );
+
+    function applyRecoveryMatch($userAgent) {
+        foreach ($this->operaMinis as $key => $deviceId) {
+            if (WURFL_Handlers_Utils::checkIfContains($userAgent, $key)) {
+                return $deviceId;
+            }
+        }
+
+        return WURFL_Constants::GENERIC;
+
+    }
 
 }

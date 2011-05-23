@@ -9,7 +9,7 @@
  *
  * Copyright (c) 2008-2009, WURFL-Pro S.r.l., Rome, Italy
  * 
- *  
+ * 
  *
  * @category   WURFL
  * @package    WURFL_Reloader
@@ -21,18 +21,21 @@
 class WURFL_Reloader_DefaultWURFLReloader implements WURFL_Reloader_Interface {
 	
 	public function reload($wurflConfigurationPath) {
-		$wurflConfig = WURFL_Configuration_ConfigFactory::create($wurflConfigurationPath);
-		WURFL_Configuration_ConfigHolder::setWURFLConfig($wurflConfig);
-
-		$cacheProvider = WURFL_Cache_CacheProviderFactory::getCacheProvider();
-		$cacheProvider->clear();
-		
-		$persistenceProvider = WURFL_Xml_PersistenceProvider_PersistenceProviderManager::getPersistenceProvider();
-		$persistenceProvider->setWURFLLoaded(FALSE);
-				
-		WURFL_WURFLManagerProvider::getWURFLManager($wurflConfigurationPath);
-				
+		$wurflConfig = $this->fromFile ( $wurflConfigurationPath );
+		touch($wurflConfig->wurflFile);
+		$wurflManagerFactory = new WURFL_WURFLManagerFactory($wurflConfig);
+		$wurflManagerFactory->create();	
 		
 	}
+	
+	private function fromFile($wurflConfigurationPath) {
+		if ($this->endsWith ( $wurflConfigurationPath, ".xml" )) {
+			return new WURFL_Configuration_XmlConfig ( $wurflConfigurationPath );
+		}
+		return new WURFL_Configuration_ArrayConfig($wurflConfigurationPath);
+	}
+	
+	private function endsWith($haystack, $needle) {
+		return strrpos($haystack, $needle) === strlen($haystack)-strlen($needle);
+	}
 }
-?>

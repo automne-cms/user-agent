@@ -62,4 +62,3 @@ class WURFL_Handlers_NecHandler extends WURFL_Handlers_Handler {
 	const NEC_KGT_TOLLERANCE = 2;
 	protected $prefix = "NEC";
 }
-?>

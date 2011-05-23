@@ -21,17 +21,25 @@
 class WURFL_Xml_DevicePatcher {
 	
 	public function patch($device, $patchingDevice) {
+		if(!$this->haveSameId($device, $patchingDevice)) {
+			return $patchingDevice;
+		}
+		$groupIdCapabilitiesMap = WURFL_WURFLUtils::array_merge_recursive_unique( $device->getGroupIdCapabilitiesMap (), $patchingDevice->getGroupIdCapabilitiesMap () );	
+		return new WURFL_Xml_ModelDevice ( $device->id, $device->userAgent, $device->fallBack, $device->actualDeviceRoot, $device->specific, $groupIdCapabilitiesMap );
+	
+	}
+	
+	
+	private function haveSameId($device, $patchingDevice) {
+		return strcmp ( $patchingDevice->id, $device->id ) === 0;
+	}
+	
+	private function checkIfCanPatch($device, $patchingDevice) {
 		
 		if (strcmp ( $patchingDevice->userAgent, $device->userAgent ) !== 0) {
 			$message = "Patch Device : " . $patchingDevice->id . " can't ovveride user agent " . $device->userAgent . " with " . $patchingDevice->userAgent;
 			throw new WURFL_WURFLException ( $message );
 		}
-		
-		$groupIdCapabilitiesMap = WURFL_WURFLUtils::array_merge_recursive_unique ( $device->getGroupIdCapabilitiesMap (), $patchingDevice->getGroupIdCapabilitiesMap () );
-		
-		return new WURFL_Xml_ModelDevice ( $device->id, $device->userAgent, $device->fallBack, $device->actualDeviceRoot, $groupIdCapabilitiesMap );
-	
 	}
 }
 
-?>

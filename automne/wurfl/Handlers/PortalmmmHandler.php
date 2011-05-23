@@ -51,13 +51,8 @@ class WURFL_Handlers_PortalmmmHandler extends WURFL_Handlers_Handler {
 	 * @return string
 	 */
 	public function lookForMatchingUserAgent($userAgent) {
-		if (array_key_exists ( $userAgent, $this->userAgentsWithDeviceID )) {
-			return $this->userAgentsWithDeviceID [$userAgent];
-		}
-		
 		return NULL;
 	}
 	
 	protected $prefix = "PORTALMMM";
 }
-?>

@@ -20,4 +20,3 @@
 class WURFL_WURFLException extends Exception  {
 }
 
-?>

@@ -6,10 +6,12 @@
 
 require_once(dirname(__FILE__).'/../../cms_rc_admin.php');
 
-//check if CMS_ua is already installed (if so, it is an update)
-$sql = "select 1 from modules where codename_mod = 'cms_ua'";
-$q = new CMS_query($sql);
-$installed = $q->getNumRows() ? true : false;
+//check if module is already installed (if so, it is an update)
+$installed = false;
+$codenames = CMS_modulesCatalog::getAllCodenames(true);
+if (isset($modules['cms_ua'])) {
+	$installed = true;
+}
 
 if (!$installed) {
 	echo "User Agent module installation : Not installed : Launch installation ...<br />";

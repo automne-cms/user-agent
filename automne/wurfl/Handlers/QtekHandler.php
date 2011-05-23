@@ -46,4 +46,3 @@ class WURFL_Handlers_QtekHandler extends WURFL_Handlers_Handler {
 	
 	protected $prefix = "QTEK";
 }
-?>

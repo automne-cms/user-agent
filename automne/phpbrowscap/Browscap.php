@@ -576,7 +576,7 @@ class Browscap
 	{
 		switch ($this->_getUpdateMethod()) {
 			case self::UPDATE_LOCAL:
-				$file = file_get_contents($url);
+				$file = @file_get_contents($url);
 
 				if ($file !== false) {
 					return $file;
@@ -584,7 +584,7 @@ class Browscap
 					throw new Browscap_Exception('Cannot open the local file');
 				}
 			case self::UPDATE_FOPEN:
-				$file = file_get_contents($url);
+				$file = @file_get_contents($url);
 
 				if ($file !== false) {
 					return $file;

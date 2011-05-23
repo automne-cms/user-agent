@@ -59,4 +59,3 @@ class WURFL_Logger_FileLogger implements WURFL_Logger_Interface  {
 
 
 
-?>

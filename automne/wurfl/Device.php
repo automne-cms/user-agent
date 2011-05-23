@@ -78,4 +78,3 @@ class WURFL_Device {
 	}
 }
 
-?>

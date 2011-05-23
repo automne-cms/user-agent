@@ -28,32 +28,33 @@ abstract class  WURFL_Configuration_Config {
 	const PROVIDER = "provider";
 	const PARAMS = "params";
 	const LOG_DIR = "logDir";
-	
+	const ALLOW_RELOAD = "allow-reload";
 	const DIR = "dir";
+	const EXPIRATION = "expiration";
 	
 	protected $configFilePath;
 	protected $configurationFileDir;
 	
-	protected $autoReload = TRUE;
+	protected $allowReload = FALSE;
 	protected $wurflFile;
 	protected $wurflPatches;
 	
 	protected $persistence = array();
 	protected $cache = array();
-	
-	
+
+    protected $logDir;
 	
 	function __construct($configFilePath) {
 		if(!file_exists($configFilePath)) {
 			throw new InvalidArgumentException("The configuration file " . $configFilePath . " does not exist.");
 		}
 		$this->configFilePath = $configFilePath;
-		$this->configurationFileDir = dirname($this->configFilePath) . DIRECTORY_SEPARATOR;
+		$this->configurationFileDir = dirname($this->configFilePath);
 
 		$this->initialize();
 	}
 	
-	protected abstract function initialize();
+	//protected abstract function initialize();
 	
 	/**
 	 * Magic Method 
@@ -86,10 +87,11 @@ abstract class  WURFL_Configuration_Config {
 	 */
 	protected function getFullPath($fileName) {
 		$fileName = trim($fileName);
-		if ($fileName[0] == '/') {
-			return $fileName;
+        if(realpath($fileName) && !(basename($fileName) === $fileName )) {
+			return realpath($fileName);
 		}
-		$fullName = $this->configurationFileDir . $fileName; 
+		$fullName = join(DIRECTORY_SEPARATOR, array($this->configurationFileDir, $fileName));
+ 
 		
 		if(file_exists($fullName)) {
 			return $fullName;
@@ -97,7 +99,7 @@ abstract class  WURFL_Configuration_Config {
 		
 		die("The File " . $fullName . " does not exist!!!\n");
 	}
-	
-	
+
+
+
 }
-?>

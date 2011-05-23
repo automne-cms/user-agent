@@ -32,6 +32,16 @@
  */
 interface WURFL_Cache_CacheProvider {
 	
+	const EXPIRATION = "expiration";
+	
+	const ONE_HOUR = 3600;
+	const ONE_DAY = 86400;
+	const ONE_WEEK = 604800;
+	const ONE_MONTH = 2592000;
+	const ONE_YEAR = 31556926;
+	const NEVER = 0;
+	
+	
 	/**
 	 * Put the the computed data into the cache so that it can be
 	 * retrieved later.
@@ -53,4 +63,3 @@ interface WURFL_Cache_CacheProvider {
 	 */
 	function clear();
 }
-?>

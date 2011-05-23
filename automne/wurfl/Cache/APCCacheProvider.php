@@ -21,23 +21,31 @@ class WURFL_Cache_APCCacheProvider implements WURFL_Cache_CacheProvider {
 	
 	const EXTENSION_MODULE_NAME = "apc";
 	
+	private $expire;
+	
 	/**
 	 *
 	 * @param array $params
 	 */
 	public function __construct($params=null) {
 		$this->_ensureModuleExistance();
+		$this->expire = isset($params[WURFL_Cache_CacheProvider::EXPIRATION]) ? $params[WURFL_Cache_CacheProvider::EXPIRATION] : WURFL_Cache_CacheProvider::NEVER;
 	}
 	
 	function get($key) {
-		return apc_fetch($key);
+		$value = apc_fetch($key);
+		if($value === FALSE) {
+			return NULL;
+		}
+		return $value;
 	}
 
 	function put($key, $value) {
-		apc_store($key, $value);
+		apc_store($key, $value, $this->expire);
 	}
 	
 	function clear() {
+		apc_clear_cache("user");
 	}
 	
  	/* 
@@ -51,4 +59,3 @@ class WURFL_Cache_APCCacheProvider implements WURFL_Cache_CacheProvider {
 	}
 }
 
-?>

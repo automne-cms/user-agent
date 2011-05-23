@@ -43,6 +43,7 @@ class WURFL_UserAgentHandlerChain {
 		return $this;
 	}
 	
+	
 	public function getHandlers() {
 		return $this->_userAgentHandlers;
 	}
@@ -57,14 +58,6 @@ class WURFL_UserAgentHandlerChain {
 		$this->_userAgentHandlers[0]->filter($userAgent, $deviceID);
 	}
 	
-	
-	public function findHandler($userAgent) {
-		foreach ($this->_userAgentHandlers as $handler) {
-			if($handler->canHandle($userAgent)) {
-				return $handler;
-			}
-		}
-	}
 	
 	
 	/**
@@ -102,4 +95,3 @@ class WURFL_UserAgentHandlerChain {
 	
 }
 
-?>

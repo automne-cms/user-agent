@@ -45,13 +45,17 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 				 * Module classes
 				 */
 				'browscap' 						=> PATH_MAIN_FS.'/phpbrowscap/Browscap.php',
-				'wurfl_configuration_xmlconfig' => PATH_MAIN_FS.'/wurfl/WURFLManagerFactory.php',
-				'wurfl_wurflmanagerfactory'		=> PATH_MAIN_FS.'/wurfl/WURFLManagerFactory.php',
 			);
 		}
 		$file = '';
 		if (isset($classes[io::strtolower($classname)])) {
 			$file = $classes[io::strtolower($classname)];
+		}
+		if (substr($classname, 0, 6) === 'WURFL_') {
+			if (!class_exists($classname, false)) {
+				$classFilePath = str_replace('_', DIRECTORY_SEPARATOR, substr($classname, 6)) . '.php';
+				$file = PATH_MAIN_FS.'/wurfl/' . $classFilePath;
+			}
 		}
 		return $file;
 	}
@@ -141,6 +145,21 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		return $tagContent;
 	}
 	
+	
+	/**
+	  * Module replacements vars
+	  *
+	  * @return array of replacements values (pattern to replace => replacement)
+	  * @access public
+	  */
+	function getModuleReplacements() {
+		$replace = array();
+		//replace '{i18n:msgid}' value by corresponding call
+		$replace["#^\{(wurfl|browscap|ua)\:([^:]*?(::)?[^:]*?)\}$#U"] = 'CMS_module_cms_ua::getBrowserInfo("\2")';
+		
+		return $replace;
+	}
+	
 	/**
 	  * Return the browser user agent infos
 	  * This method use $_SESSION['cms_ua']['browserInfos'] to store browser informations
@@ -182,8 +201,10 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 			CMS_grandFather::raiseError($e->getMessage());
 			$_SESSION['cms_ua']['browserInfos']['browscap'] = array();
 		}
+		
 		//get wurfl datas
 		try {
+			@set_time_limit(180); //because wurfl cache creation can be long ...
 			$wurflConfigFile = PATH_MAIN_FS.'/wurfl/wurfl-config.xml';
 			$wurflConfig = new WURFL_Configuration_XmlConfig($wurflConfigFile);
 			$wurflManagerFactory = new WURFL_WURFLManagerFactory($wurflConfig);
@@ -248,12 +269,12 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 				$datas = '';
 				if (isset($browserInfos['browscap'])) {
 					foreach($browserInfos['browscap'] as $key => $value) {
-						$datas .= '{{browscap:'.$key.'}} => '.$value.'<br />';
+						$datas .= '{browscap:'.$key.'} => '.$value.'<br />';
 					}
 				}
 				if (isset($browserInfos['wurfl'])) {
 					foreach($browserInfos['wurfl'] as $key => $value) {
-						$datas .= '{{wurfl:'.$key.'}} => '.$value.'<br />';
+						$datas .= '{wurfl:'.$key.'} => '.$value.'<br />';
 					}
 				}
 				return $datas;

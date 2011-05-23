@@ -46,4 +46,3 @@ class WURFL_Handlers_SiemensHandler extends WURFL_Handlers_Handler {
 	
 	protected $prefix = "SIEMENS";
 }
-?>

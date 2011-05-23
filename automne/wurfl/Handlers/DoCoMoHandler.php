@@ -30,6 +30,8 @@
  */
 class WURFL_Handlers_DoCoMoHandler extends WURFL_Handlers_Handler {
 	
+	protected $prefix = "DOCOMO";
+	
 	function __construct($wurflContext, $userAgentNormalizer = null) {
 		parent::__construct ( $wurflContext, $userAgentNormalizer );
 	}
@@ -51,13 +53,16 @@ class WURFL_Handlers_DoCoMoHandler extends WURFL_Handlers_Handler {
 	 * @return string
 	 */
 	public function lookForMatchingUserAgent($userAgent) {
-		if (array_key_exists ( $userAgent, $this->userAgentsWithDeviceID )) {
-			return $this->userAgentsWithDeviceID [$userAgent];
-		}
-		
 		return NULL;
 	}
 	
-	protected $prefix = "DOCOMO";
+	function applyRecoveryMatch($userAgent) {
+		if( WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "DoCoMo/2" )) {
+			return "docomo_generic_jap_ver2";
+		}
+		
+		return "docomo_generic_jap_ver1";
+
+	}
+
 }
-?>

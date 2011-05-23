@@ -42,9 +42,27 @@ class WURFL_Handlers_BlackBerryHandler extends WURFL_Handlers_Handler {
 	 * @return string
 	 */
 	public function canHandle($userAgent) {
-		return WURFL_Handlers_Utils::checkIfContains ( $userAgent, "BlackBerry" );
+		return WURFL_Handlers_Utils::checkIfContains ( $userAgent, "BlackBerry" ) || WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Blackberry" );
 	}
 	
+	private $blackberryIds = array(
+		"2." => "blackberry_generic_ver2",
+        "3.2" => "blackberry_generic_ver3_sub2",
+        "3.3" => "blackberry_generic_ver3_sub30",
+        "3.5" => "blackberry_generic_ver3_sub50",
+        "3.6" => "blackberry_generic_ver3_sub60",
+        "3.7" => "blackberry_generic_ver3_sub70",
+		"4.1" => "blackberry_generic_ver4_sub10",
+       	"4.2" => "blackberry_generic_ver4_sub20",
+	    "4.3" => "blackberry_generic_ver4_sub30",
+	    "4.5" => "blackberry_generic_ver4_sub50",
+       	"4.6" => "blackberry_generic_ver4_sub60",
+	    "4.7" => "blackberry_generic_ver4_sub70",
+	    "4." => "blackberry_generic_ver4",	
+	    "5." => "blackberry_generic_ver5",
+	    "6." => "blackberry_generic_ver6"
+	
+	);
 	/**
 	 * Apply Recovery Match
 	 *
@@ -52,39 +70,28 @@ class WURFL_Handlers_BlackBerryHandler extends WURFL_Handlers_Handler {
 	 * @return string
 	 */
 	function applyRecoveryMatch($userAgent) {
-		
-		if (strpos ( $userAgent, "BlackBerry" ) === 0) {
-			
-			$position = WURFL_Handlers_Utils::firstSlash ( $userAgent );
-			if ($position > 0 && $position + 4 <= strlen ( $userAgent )) {
-				$version = substr ( $userAgent, $position + 1, $position + 4 );
-				
-				if (strpos ( $version, "2." ) === 0) {
-					return "blackberry_generic_ver2";
-				}
-				if (strpos ( $version, "3.2" ) === 0) {
-					return "blackberry_generic_ver3_sub2";
-				}
-				if (strpos ( $version, "3.3" ) === 0) {
-					return "blackberry_generic_ver3_sub30";
-				}
-				if (strpos ( $version, "3.5" ) === 0) {
-					return "blackberry_generic_ver3_sub50";
-				}
-				if (strpos ( $version, "3.6" ) === 0) {
-					return "blackberry_generic_ver3_sub60";
-				}
-				if (strpos ( $version, "3.7" ) === 0) {
-					return "blackberry_generic_ver3_sub70";
-				}
-				if (strpos ( $version, "4." ) === 0) {
-					return "blackberry_generic_ver4";
-				}
+		$version = $this->blackberryVersion($userAgent);
+		if(is_null($version)) {
+			return WURFL_Constants::GENERIC;
+		}
+		foreach ($this->blackberryIds as $v => $deviceId) {
+			if(WURFL_Handlers_Utils::checkIfStartsWith($version, $v)) {
+				return $deviceId;
 			}
 		}
+		
+		return WURFL_Constants::GENERIC;
+		
+	}
+	
+	const BLACKBERRY_VERSION_PATTERN = "/Black[Bb]erry[^\/\s]+\/(\d.\d)/";
+	private function blackberryVersion($userAgent) {
+		if(preg_match(self::BLACKBERRY_VERSION_PATTERN, $userAgent, $matches)) {
+			return $matches[1];
+		}
+		return NULL;
 	}
 	
 	protected $prefix = "BLACKBERRY";
 }
 
-?>

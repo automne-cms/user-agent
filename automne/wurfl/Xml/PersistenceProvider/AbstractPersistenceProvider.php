@@ -32,6 +32,7 @@
 abstract class WURFL_Xml_PersistenceProvider_AbstractPersistenceProvider implements WURFL_Xml_PersistenceProvider {
 	
 	const APPLICATION_PREFIX = "WURFL_"; 
+	const WURFL_LOADED = "WURFL_WURFL_LOADED";
 	protected $persistenceIdentifier;
 	
 	/**
@@ -73,7 +74,7 @@ abstract class WURFL_Xml_PersistenceProvider_AbstractPersistenceProvider impleme
      * @return boolean
      */
  	public function isWURFLLoaded() {
-        return $this->load(WURFL_Xml_XMLResourceManager::WURFL_LOADED);
+        return $this->load(self::WURFL_LOADED);
     }
 	
     /**
@@ -82,7 +83,7 @@ abstract class WURFL_Xml_PersistenceProvider_AbstractPersistenceProvider impleme
      * @return 
      */
     public function setWURFLLoaded($loaded=TRUE) {
-        $this->save(WURFL_Xml_XMLResourceManager::WURFL_LOADED, $loaded);
+        $this->save(self::WURFL_LOADED, $loaded);
     }
 	
 	/**
@@ -107,4 +108,3 @@ abstract class WURFL_Xml_PersistenceProvider_AbstractPersistenceProvider impleme
 	
 	
 }
-?>

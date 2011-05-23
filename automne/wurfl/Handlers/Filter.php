@@ -51,4 +51,3 @@ interface WURFL_Handlers_Filter {
 
 }
 
-?>

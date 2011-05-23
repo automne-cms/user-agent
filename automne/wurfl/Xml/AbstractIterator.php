@@ -80,4 +80,3 @@ abstract class WURFL_Xml_AbstractIterator implements Iterator {
 	
 	
 }
-?>

@@ -34,6 +34,7 @@ interface WURFL_Xml_Interface {
 	const USER_AGENT = "user_agent";
 	const FALL_BACK = "fall_back";
 	const ACTUAL_DEVICE_ROOT = "actual_device_root";
+	const SPECIFIC = "specific";
 	
 	const DEVICE = "device";
 	
@@ -47,4 +48,3 @@ interface WURFL_Xml_Interface {
 	
 }
 
-?>

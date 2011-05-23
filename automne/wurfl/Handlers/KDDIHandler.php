@@ -30,43 +30,52 @@
  */
 class WURFL_Handlers_KDDIHandler extends WURFL_Handlers_Handler {
 	
+	protected $prefix = "KDDI";
+	
 	function __construct($wurflContext, $userAgentNormalizer = null) {
 		parent::__construct ( $wurflContext, $userAgentNormalizer );
 	}
 	
 	/**
-	 * Intercept all UAs starting with "KDDI"
+	 * Intercept all UAs containing "KDDI"
 	 *
 	 * @param string $userAgent
 	 * @return boolean
 	 */
 	public function canHandle($userAgent) {
-		return WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "KDDI" );
+		return WURFL_Handlers_Utils::checkIfContains ( $userAgent, "KDDI" );
 	}
 	
 	/**
-	 * if UA starts with "KDDI/", apply RIS with Second Slash Otherwise apply RIS
-	 * with FS
 	 */
 	function lookForMatchingUserAgent($userAgent) {
-		if (WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "KDDI/" )) {
-			$tollerance = WURFL_Handlers_Utils::secondSlash ( $userAgent );
-			return WURFL_Handlers_Utils::risMatch ( array_keys ( $this->userAgentsWithDeviceID ), $userAgent, $tollerance );
-		}
-		
-		return parent::lookForMatchingUserAgent ( $userAgent );
+		$tolerance = $this->tolerance ( $userAgent );
+		return WURFL_Handlers_Utils::risMatch ( array_keys ( $this->userAgentsWithDeviceID ), $userAgent, $tolerance );
 	}
 	
 	/**
-	 * Return "opwv_v62_generic"
 	 *
 	 * @param string $userAgent
 	 * @return string
 	 */
 	function applyRecoveryMatch($userAgent) {
+		if (WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Opera" )) {
+			return "opera";
+		}
 		return "opwv_v62_generic";
 	}
 	
-	protected $prefix = "KDDI";
+	private function tolerance($userAgent) {
+		if (WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "KDDI/" )) {
+			return WURFL_Handlers_Utils::secondSlash ( $userAgent );
+		}
+		
+		if (WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "KDDI" )) {
+			return WURFL_Handlers_Utils::firstSlash ( $userAgent );
+		}
+		
+		return WURFL_Handlers_Utils::indexOfOrLength ( $userAgent, ")" );
+	
+	}
+
 }
-?>

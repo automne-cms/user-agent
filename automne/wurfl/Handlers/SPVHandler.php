@@ -47,28 +47,8 @@ class WURFL_Handlers_SPVHandler extends WURFL_Handlers_Handler {
 	}
 	
 	function lookForMatchingUserAgent($userAgent) {
-		$tollerance = WURFL_Handlers_Utils::indexOfOrLength ( $userAgent, ";", strpos ( $userAgent, "SPV" ) );
-		return parent::applyRisWithTollerance ( array_keys ( $this->userAgentsWithDeviceID ), $userAgent, $tollerance );
+		$tolerance = WURFL_Handlers_Utils::indexOfOrLength ( $userAgent, ";", strpos ( $userAgent, "SPV" ) );
+		return parent::applyRisWithTollerance ( array_keys ( $this->userAgentsWithDeviceID ), $userAgent, $tolerance );
 	}
 	
-	/**
-	 * If "OpVer x.x.x.x is present, then apply TokensMatcher wit thresold 7,
-	 * otherwise apply LD with thresold 5.
-	 *
-	 * @param string $userAgent
-	 * @return string
-	 */
-	function lookForMatchingUserAgentx($userAgent) {
-		$userAgents = array_keys ( $this->userAgentsWithDeviceID );
-		$spvTokensProvider = new WURFL_Handlers_Matcher_SPVProvider ();
-		
-		if ($spvTokensProvider->canApply ( $userAgent )) {
-			$tokenMatcher = new WURFL_Handlers_Matcher_TokenMatcher ( $spvTokensProvider );
-			return $tokenMatcher->match ( $userAgents, $userAgent, 7 );
-		}
-		return WURFL_Handlers_Utils::ldMatch ( $userAgents, $userAgent, 5 );
-	
-	}
-
 }
-?>

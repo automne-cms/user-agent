@@ -31,18 +31,24 @@ class WURFL_Xml_PersistenceProvider_APCPersistenceProvider extends WURFL_Xml_Per
 	}
 	
 	public function save($objectId, $object) {
-		return apc_store ( $this->encode ( $objectId ), $object );
+		apc_store ( $this->encode ( $objectId ), $object );
 	}
 	
-	public function find($objectId) {
-		return apc_fetch ( $this->encode ( $objectId ) );
+	public function load($objectId) {
+		$value = apc_fetch ( $this->encode ( $objectId ) );
+		return $value !== false ? $value : NULL;
 	}
 	
-	public function getAllData() {
+	public function remove($objectId) {
+		apc_delete ( $this->encode ( $objectId ) );
 	}
 	
-	public function cleanAllData() {
-	
+	/**
+	 * Removes all entry from the Persistence Provider
+	 *
+	 */
+	public function clear() {
+		apc_clear_cache ( "user" );
 	}
 	
 	/**
@@ -50,8 +56,8 @@ class WURFL_Xml_PersistenceProvider_APCPersistenceProvider extends WURFL_Xml_Per
 	 *
 	 */
 	private function _ensureModuleExistance() {
-		if (! extension_loaded ( self::EXTENSION_MODULE_NAME )) {
-			throw new WURFL_Xml_PersistenceProvider_Exception ( "The PHP extension apc must be installed and loaded in order to use the Memcached." );
+		if (! (extension_loaded ( self::EXTENSION_MODULE_NAME ) && ini_get ( 'apc.enabled' ) == true)) {
+			throw new WURFL_Xml_PersistenceProvider_Exception ( "The PHP extension apc must be installed, loaded and enabled." );
 		}
 	}
 

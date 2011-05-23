@@ -63,4 +63,3 @@ class WURFL_Handlers_PantechHandler extends WURFL_Handlers_Handler {
 	const PANTECH_TOLLERANCE = 4;
 	protected $prefix = "PANTECH";
 }
-?>

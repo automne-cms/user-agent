@@ -23,7 +23,7 @@ class WURFL_WURFLService {
 	private $_userAgentHandlerChain;
 	private $_cacheProvider;
 	
-	public function __construct(WURFL_DeviceRepository $deviceRepository, WURFL_UserAgentHandlerChain $userAgentHandlerChain, WURFL_Cache_CacheProvider $cacheProvider) {
+	public function __construct(WURFL_DeviceRepository $deviceRepository, WURFL_UserAgentHandlerChain $userAgentHandlerChain, WURFL_Storage $cacheProvider) {
 		$this->_deviceRepository = $deviceRepository;
 		$this->_userAgentHandlerChain = $userAgentHandlerChain;
 		$this->_cacheProvider = $cacheProvider;
@@ -94,11 +94,11 @@ class WURFL_WURFLService {
 	 * 
 	 */
 	private function deviceIdForRequest($request) {
-		$deviceId = $this->_cacheProvider->get ( $request->id );
+		$deviceId = $this->_cacheProvider->load ( $request->id );
 		if (empty ( $deviceId )) {
 			$deviceId = $this->_userAgentHandlerChain->match ( $request );
 			// save it in cache
-			$this->_cacheProvider->put ( $request->id, $deviceId );
+			$this->_cacheProvider->save ( $request->id, $deviceId );
 		}
 		return $deviceId;
 	}
@@ -110,9 +110,9 @@ class WURFL_WURFLService {
 	 * @return WURFL_Xml_ModelDevice
 	 */
 	private function getWrappedDevice($deviceID) {
-		$modelDevice = $this->_deviceRepository->getDevice ( $deviceID );
-		return new WURFL_Device ( $modelDevice, new WURFL_CapabilitiesHolder ( $modelDevice, $this->_deviceRepository, $this->_cacheProvider ) );
+		$modelDevices = $this->_deviceRepository->getDeviceHierarchy($deviceID);
+		return new WURFL_CustomDevice($modelDevices);
+		//return new WURFL_Device ( $modelDevice, new WURFL_CapabilitiesHolder ( $modelDevice, $this->_deviceRepository, $this->_cacheProvider ) );
 	}
 }
 
-?>

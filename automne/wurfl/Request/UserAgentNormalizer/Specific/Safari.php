@@ -8,17 +8,17 @@
  * COPYING file distributed with this package.
  *
  * Copyright (c) 2008-2009, WURFL-Pro S.r.l., Rome, Italy
- * 
- *  
+ *
+ *
  *
  * @category   WURFL
- * @package    WURFL_Request_UserAgentNormalizer
+ * @package    WURFL_Request_UserAgentNormalizer_Specific
  * @copyright  WURFL-PRO SRL, Rome, Italy
  * @license
+ * @author     Fantayeneh Asres Gizaw
  * @version    $id$
  */
-
-class WURFL_Request_UserAgentNormalizer_Safari implements WURFL_Request_UserAgentNormalizer_Interface {
+class WURFL_Request_UserAgentNormalizer_Specific_Safari implements WURFL_Request_UserAgentNormalizer_Interface {
 	
 	const PATTERN = "/(Mozilla\/5\.0.*U;)(?:.*)(Safari\/\d{0,3})(?:.*)/";
 	/**
@@ -38,4 +38,3 @@ class WURFL_Request_UserAgentNormalizer_Safari implements WURFL_Request_UserAgen
 
 }
 
-?>

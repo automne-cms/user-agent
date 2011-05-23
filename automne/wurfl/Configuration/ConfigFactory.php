@@ -19,4 +19,3 @@ class WURFL_Configuration_ConfigFactory {
 		return strcmp ( "xml", substr ( $fileName, - 3 ) ) === 0 ? TRUE : FALSE;
 	}
 }
-?>

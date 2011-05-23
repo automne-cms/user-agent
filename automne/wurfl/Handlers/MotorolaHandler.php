@@ -65,4 +65,3 @@ class WURFL_Handlers_MotorolaHandler extends WURFL_Handlers_Handler {
 	}
 
 }
-?>

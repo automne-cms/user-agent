@@ -19,16 +19,16 @@
  */
 class WURFL_Logger_LoggerFactory {
 	
-	public static function createUndetectedDeviceLogger($wurflConfig) {	
+	public static function createUndetectedDeviceLogger($wurflConfig=NULL) {	
 		if(self::isLoggingConfigured($wurflConfig)) {
-			return self::createFileLogger("undetected_devices.log");
+			return self::createFileLogger($wurflConfig, "undetected_devices.log");
 		}
 		return new WURFL_Logger_NullLogger ( );
 	}
 	
-	public static function create($wurflConfig) {
+	public static function create($wurflConfig=NULL) {
 		if(self::isLoggingConfigured($wurflConfig)) {
-			return self::createFileLogger("wurfl.log");
+			return self::createFileLogger($wurflConfig, "wurfl.log");
 		}
 		return new WURFL_Logger_NullLogger ( );				
 	}
@@ -41,15 +41,17 @@ class WURFL_Logger_LoggerFactory {
 	}
 	
 	private static function isLoggingConfigured($wurflConfig) {	
+		if(is_null($wurflConfig)) {
+			return false;
+		}
 		$logDir = $wurflConfig->logDir;
 		return isset ( $wurflConfig->logDir ) && is_writable ( $logDir );
 	}
 	
 		
 	private static function createLogFile($logDir, $fileName) {		
-		return $logDir . File . DIRECTORY_SEPARATOR . $fileName;
+		return $logDir . DIRECTORY_SEPARATOR . $fileName;
 	}
 
 }
 
-?>

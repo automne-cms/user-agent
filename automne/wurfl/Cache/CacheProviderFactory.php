@@ -23,8 +23,6 @@ class WURFL_Cache_CacheProviderFactory  {
 
 	const DEFAULT_CACHE_PROVIDER_NAME = "file";
 
-	private static $_cacheProviders = array();
-
 	// prevent instantiation
 	private function __construct(){}
 	private function __clone(){}
@@ -36,9 +34,9 @@ class WURFL_Cache_CacheProviderFactory  {
 	 * @return CacheProvider
 	 */
 	public static function getCacheProvider($cacheConfig=null) {
-		$cache = is_null($cacheConfig) ? WURFL_Configuration_ConfigHolder::getWURFLConfig()->cache : $cacheConfig;
-		$provider = isset($cache["provider"]) ? $cache["provider"] : null;
-		
+		$cacheConfig = is_null($cacheConfig) ? WURFL_Configuration_ConfigHolder::getWURFLConfig()->cache : $cacheConfig;
+		$provider = isset($cacheConfig["provider"]) ? $cacheConfig["provider"] : NULL;
+		$cache = isset($cacheConfig["params"]) ? $cacheConfig["params"] : NULL;
 		switch ($provider) {
 			case WURFL_Constants::FILE:
 				self::$_cacheProvider = new WURFL_Cache_FileCacheProvider($cache);
@@ -68,4 +66,3 @@ class WURFL_Cache_CacheProviderFactory  {
 	private static $_cacheProvider;
 }
 
-?>

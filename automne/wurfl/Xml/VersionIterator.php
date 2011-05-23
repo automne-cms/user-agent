@@ -60,4 +60,3 @@ class WURFL_Xml_VersionIterator extends WURFL_Xml_AbstractIterator {
 	}
 
 }
-?>

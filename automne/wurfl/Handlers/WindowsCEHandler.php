@@ -64,8 +64,7 @@ class WURFL_Handlers_WindowsCEHandler extends WURFL_Handlers_Handler {
 	 * @return string
 	 */
 	function applyRecoveryMatch($userAgent) {
-		return "ms_mobile_browser_ver1";
+		return "generic_ms_mobile";
 	}
 
 }
-?>

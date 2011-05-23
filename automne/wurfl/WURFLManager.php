@@ -73,7 +73,7 @@ class WURFL_WURFLManager {
 	 */
 	function getDeviceForUserAgent($userAgent) {
 		if (! isset ( $userAgent )) {
-			throw new Exception ( "The $userAgent parameter must be set" );
+			$userAgent = '';
 		}
 		
 		$request = $this->_requestFactory->createRequestForUserAgent ( $userAgent );
@@ -131,4 +131,3 @@ class WURFL_WURFLManager {
 
 }
 
-?>

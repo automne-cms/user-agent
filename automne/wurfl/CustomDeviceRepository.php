@@ -18,23 +18,21 @@
  * @version    $id$
  * 
  */
-class WURFL_CustomDeviceRepository extends WURFL_DeviceRepository {
+class WURFL_CustomDeviceRepository implements WURFL_DeviceRepository {
 	
 	const WURFL_USER_AGENTS_CLASSIFIED = "WURFL_USER_AGENTS_CLASSIFIED";
 	
 	private $persistenceProvider;
 	private $deviceClassificationNames;
 	
-	private $_groupIDCapabilitiesMap;
-	private $_userAgentsWithDeviceIDMap;
-	private $_devicesId;
-	private $_capabilitiesName;
+	private $_groupIDCapabilitiesMap = array ();
+	private $_capabilitiesName = array ();
 	
 	private $_deviceCache = array ();
 	
 	public function __construct($persistenceProvider, $deviceClassificationNames) {
 		if (is_null ( $persistenceProvider )) {
-			throw new InvalidArgumentException ( "$persistenceProvider cannt be null" );
+			throw new InvalidArgumentException ( "$persistenceProvider cannot be null" );
 		}
 		$this->persistenceProvider = $persistenceProvider;
 		$this->deviceClassificationNames = $deviceClassificationNames;
@@ -43,12 +41,26 @@ class WURFL_CustomDeviceRepository extends WURFL_DeviceRepository {
 	
 	private function init() {
 		$genericDevice = $this->getDevice ( "generic" );
-		$this->_capabilitiesName = array_keys ( $genericDevice->capabilities );
-		$this->_groupIDCapabilitiesMap = $genericDevice->groupIdCapabilitiesNameMap;
+		if (! is_null ( $genericDevice )) {
+			$this->_capabilitiesName = array_keys ( $genericDevice->getCapabilities() );
+			$this->_groupIDCapabilitiesMap = $genericDevice->getGroupIdCapabilitiesNameMap();
+		}
 	}
 	
 	public function getWURFLInfo() {
-		return $this->persistenceProvider->load ( WURFL_Xml_Info::PERSISTENCE_KEY );
+		$wurflInfo = $this->persistenceProvider->load ( WURFL_Xml_Info::PERSISTENCE_KEY );
+		if ($wurflInfo != NULL) {
+			return $wurflInfo;
+		}
+		return WURFL_Xml_Info::noInfo ();
+	}
+	
+	public function getVersion() {
+		return $this->getWURFLInfo ()->version;
+	}
+	
+	public function getLastUpdated() {
+		return $this->getWURFLInfo ()->lastUpdated;
 	}
 	
 	/**
@@ -61,10 +73,26 @@ class WURFL_CustomDeviceRepository extends WURFL_DeviceRepository {
 	 */
 	public function getDevice($deviceId) {
 		if (! isset ( $this->_deviceCache [$deviceId] )) {
-			$this->_deviceCache [$deviceId] = $this->persistenceProvider->load ( $deviceId );
+			$device = $this->persistenceProvider->load ( $deviceId );
+			if (is_null ( $device )) {
+				throw new Exception ( "There is no device with id [$deviceId] in wurfl" );
+			}
+			$this->_deviceCache [$deviceId] = $device;
+		}
+		return $this->_deviceCache [$deviceId];
+	}
+	
+	/**
+	 * Returns all devices in the repository
+	 */
+	public function getAllDevices() {
+		$devices = array ();
+		$devicesId = $this->getAllDevicesID ();
+		foreach ( $devicesId as $deviceId ) {
+			$devices [] = $this->getDevice ( $deviceId );
 		}
 		
-		return $this->_deviceCache [$deviceId];
+		return $devices;
 	}
 	
 	/**
@@ -73,13 +101,13 @@ class WURFL_CustomDeviceRepository extends WURFL_DeviceRepository {
 	 * @return array
 	 */
 	public function getAllDevicesID() {
-		$devicesId = array();
-		foreach ($this->deviceClassificationNames as $className) {
-			$currentMap = $this->persistenceProvider->load($className);
-			if(!is_array($currentMap)) {
-				$currentMap = array();	
+		$devicesId = array ();
+		foreach ( $this->deviceClassificationNames as $className ) {
+			$currentMap = $this->persistenceProvider->load ( $className );
+			if (! is_array ( $currentMap )) {
+				$currentMap = array ();
 			}
-			$devicesId = array_merge($devicesId, array_values($currentMap));
+			$devicesId = array_merge ( $devicesId, array_values ( $currentMap ) );
 		}
 		return $devicesId;
 	}
@@ -150,19 +178,15 @@ class WURFL_CustomDeviceRepository extends WURFL_DeviceRepository {
 	 * Returns an array containing all devices from the root
 	 * device to the device of the given id
 	 *
-	 * @param string $deviceID
+	 * @param string $deviceId
 	 * @return array
 	 */
-	public function getDeviceHierarchy($deviceID) {
+	public function getDeviceHierarchy($deviceId) {
 		$devices = array ();
-		while ( strcmp ( $deviceID, "root" ) ) {
-			$device = $this->getDevice ( $deviceID );
-			
-			if (is_null ( $device )) {
-				break;
-			}
+		while ( strcmp ( $deviceId, "root" ) ) {
+			$device = $this->getDevice ( $deviceId );
 			$devices [] = $device;
-			$deviceID = $device->fallBack;
+			$deviceId = $device->fallBack;
 		}
 		return $devices;
 	}
@@ -202,6 +226,6 @@ class WURFL_CustomDeviceRepository extends WURFL_DeviceRepository {
 			throw new WURFL_WURFLException ( "capability value is not set." );
 		}
 		
-		return $this->_capabilityByGroupMap [$capability];
+		return $this->_groupIDCapabilitiesMap [$capability];
 	}
 }

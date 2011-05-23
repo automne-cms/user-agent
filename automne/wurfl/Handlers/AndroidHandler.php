@@ -47,7 +47,7 @@ class WURFL_Handlers_AndroidHandler extends WURFL_Handlers_Handler {
 	}
 	
 	/**
-	 * Use RIS with first space after the Android String as tollerance
+	 * Use RIS with first semicolon after the Android String as tollerance
 	 *
 	 * @param string $userAgent
 	 */
@@ -57,6 +57,16 @@ class WURFL_Handlers_AndroidHandler extends WURFL_Handlers_Handler {
 		return parent::applyRisWithTollerance ( $userAgents, $userAgent, $tollerance );
 	}
 	
+	
+	private $androidDeviceIdByVersion = array(
+		"" => "generic_android",
+		"1_5" => "generic_android_ver1_5",
+		"1_6" => "generic_android_ver1_6",
+		"2_0" => "generic_android_ver2",
+		"2_1" => "generic_android_ver2_1",
+		"2_2" => "generic_android_ver2_2"
+	);
+	
 	/**
 	 * If the User Agent contains "Android" 
 	 * Return "generic_andorid" 
@@ -65,8 +75,29 @@ class WURFL_Handlers_AndroidHandler extends WURFL_Handlers_Handler {
 	 * @return string
 	 */
 	function applyRecoveryMatch($userAgent) {
-		return "generic_android";
+		$deviceId = "generic_android";
+		$platformVersion = $this->platformVersion($userAgent);
+		if(isset($this->androidDeviceIdByVersion[$platformVersion])) {
+			$deviceId = $this->androidDeviceIdByVersion[$platformVersion];
+		} else if($this->isFroyo($userAgent)) {
+			return "generic_android_ver2_2";
+		}
+		return $deviceId;
+		
+	}
+	
+	private function isFroyo($userAgent) {
+		return strpos($userAgent, "Froyo") !== 0;
+	}
+	
+	const ANDROID_PLATFORM_VERSION = "/Android[\s\/](\d)\.(\d+)/";
+	
+	private function platformVersion($userAgent) {
+		$matches = array();
+		if(preg_match(self::ANDROID_PLATFORM_VERSION, $userAgent, $matches) != 0) {
+			return $matches[1] . "_" . $matches[2];
+		}
+		return "";
 	}
 
 }
-?>

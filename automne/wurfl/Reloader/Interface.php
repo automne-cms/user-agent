@@ -23,4 +23,3 @@ interface WURFL_Reloader_Interface {
 }
 
 
-?>

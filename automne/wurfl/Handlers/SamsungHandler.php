@@ -35,18 +35,17 @@ class WURFL_Handlers_SamsungHandler extends WURFL_Handlers_Handler {
 	}
 	
 	/**
-	 * Intercept all UAs containing "Samsung/SGH" or
-	 * starting with one of the following
-	 * "SEC-", "Samsung", "SAMSUNG", "SPH", "SGH", "SCH"
 	 *
 	 * @param string $userAgent
 	 * @return boolean
 	 */
 	function canHandle($userAgent) {
-		return WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Samsung/SGH" ) || WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "SEC-" ) || WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "Samsung" ) || WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "SAMSUNG" ) || WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "SPH" ) || WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "SGH" ) || WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "SCH" );
+		return WURFL_Handlers_Utils::checkIfContains ( $userAgent, "Samsung/SGH" )
+                || WURFL_Handlers_Utils::checkIfStartsWithAnyOf ( $userAgent, array("SEC-","Samsung","SAMSUNG", "SPH", "SGH", "SCH"));
 	}
-	
-	/**
+
+
+ 	/**
 	 * If UA starts with one of the following ("SEC-", "SAMSUNG-", "SCH"), apply RIS with FS.
 	 * If UA starts with one of the following ("Samsung-","SPH", "SGH" ), apply RIS with First Space (not FS).
 	 * If UA starts with "SAMSUNG/", apply RIS with threshold SS (Second Slash)
@@ -55,18 +54,25 @@ class WURFL_Handlers_SamsungHandler extends WURFL_Handlers_Handler {
 	 * @return string
 	 */
 	function lookForMatchingUserAgent($userAgent) {
-		if (WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "SEC-" ) || WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "SAMSUNG-" ) || WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "SCH" )) {
-			$tollerance = WURFL_Handlers_Utils::firstSlash ( $userAgent );
-		} else if (WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "Samsung" ) || WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "SPH" ) || WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "SGH" )) {
-			$tollerance = WURFL_Handlers_Utils::firstSpace ( $userAgent );
-		} else {
-			$tollerance = WURFL_Handlers_Utils::secondSlash ( $userAgent );
-		}
-		$this->logger->log ( "$this->prefix :Applying Conclusive Match for ua: $userAgent with tollerance $tollerance" );
-		return WURFL_Handlers_Utils::risMatch ( array_keys ( $this->userAgentsWithDeviceID ), $userAgent, $tollerance );
+        $tolerance = $this->tolerance($userAgent);
+		$this->logger->log ( "$this->prefix :Applying Conclusive Match for ua: $userAgent with tolerance $tolerance" );
+		return WURFL_Handlers_Utils::risMatch ( array_keys ( $this->userAgentsWithDeviceID ), $userAgent, $tolerance );
 	}
-	
-	protected $prefix = "SAMSUNG";
+
+ 
+    private function tolerance($userAgent) {
+        if(WURFL_Handlers_Utils::checkIfStartsWithAnyOf($userAgent, array("SEC-", "SAMSUNG-", "SCH"))) {
+            return WURFL_Handlers_Utils::firstSlash($userAgent);
+        }
+        if(WURFL_Handlers_Utils::checkIfStartsWithAnyOf($userAgent, array("Samsung-","SPH", "SGH"))) {
+            return WURFL_Handlers_Utils::firstSpace($userAgent);
+        }
+        if(WURFL_Handlers_Utils::checkIfStartsWith($userAgent, "SAMSUNG/")) {
+            return WURFL_Handlers_Utils::secondSlash($userAgent);
+        }
+        return WURFL_Handlers_Utils::firstSlash($userAgent);
+    }
+
+    protected $prefix = "SAMSUNG";
 }
 
-?>

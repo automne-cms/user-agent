@@ -19,7 +19,7 @@
  */
 
 class WURFL_Handlers_Matcher_RISMatcher implements WURFL_Handlers_Matcher_Interface {
-
+	
 	/**
 	 * Creates a RISMatcher
 	 *
@@ -27,11 +27,10 @@ class WURFL_Handlers_Matcher_RISMatcher implements WURFL_Handlers_Matcher_Interf
 	 */
 	public static function INSTANCE() {
 		if (self::$instance === null) {
-			self::$instance = new self;
+			self::$instance = new self ();
 		}
 		return self::$instance;
 	}
-
 	
 	/**
 	 *
@@ -44,62 +43,65 @@ class WURFL_Handlers_Matcher_RISMatcher implements WURFL_Handlers_Matcher_Interf
 		$match = NULL;
 		$bestDistance = 0;
 		$low = 0;
-		$high = sizeof($collection)-1;
-		while($low <= $high) {
-			$mid = floor(($low + $high)/2);
-			$find = $collection[$mid];
-			$distance = $this->_distance($needle, $find);
+		$high = sizeof ( $collection ) - 1;
+		$bestIndex = 0;
+		while ( $low <= $high ) {
+			$mid = round ( ($low + $high) / 2 );
+			$find = $collection [$mid];
+			$distance = $this->longestCommonPrefixLength ( $needle, $find );
 			if ($distance > $bestDistance) {
+				$bestIndex = $mid;
 				$match = $find;
 				$bestDistance = $distance;
 			}
 			
-			$cmp = strcmp($find, $needle);
-			if($cmp < 0) {
-                $low = $mid + 1;
-            } else if ($cmp > 0) {
+			$cmp = strcmp ( $find, $needle );
+			if ($cmp < 0) {
+				$low = $mid + 1;
+			} else if ($cmp > 0) {
 				$high = $mid - 1;
-				
+			
 			} else {
 				break;
 			}
 		}
-
+		
 		if ($bestDistance < $tollerance) {
 			return NULL;
 		}
-		
-		return $match;
+		if($bestIndex == 0) {
+			return $match;
+		}
+		return $this->firstOfTheBests ( $collection, $needle, $bestIndex, $bestDistance );
 	}
-
-	/**
-	 * Reutruns the longest common substring
-	 *
-	 * @param string $s
-	 * @param string $t
-	 * @return int
-	 */
-	private function _distance($s, $t) {
-		$length = min(strlen($s), strlen($t));
+	
+	private function firstOfTheBests($collection, $needle, $bestIndex, $bestDistance) {
+		
+		while($bestIndex > 0 && $this->longestCommonPrefixLength ( $collection [$bestIndex-1], $needle ) == $bestDistance) {
+			$bestIndex = $bestIndex - 1;
+		}
+		return $collection [$bestIndex];
+	}
+	
+	private function longestCommonPrefixLength($s, $t) {
+		$length = min ( strlen ( $s ), strlen ( $t ) );
 		
 		$i = 0;
-		while ($i < $length) {
-			if ($s[$i] !== $t[$i] ) {
+		while ( $i < $length ) {
+			if ($s [$i] !== $t [$i]) {
 				break;
 			}
-			$i++;
-			
+			$i ++;
+		
 		}
 		
 		return $i;
-		
+	
 	}
 	
+	private function __construct() {
+	}
 	
-
-	private function __construct() {}
-
 	private static $instance;
 }
 
-?>

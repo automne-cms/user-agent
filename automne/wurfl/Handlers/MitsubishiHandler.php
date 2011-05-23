@@ -43,12 +43,6 @@ class WURFL_Handlers_MitsubishiHandler extends WURFL_Handlers_Handler {
 	public function canHandle($userAgent) {
 		return WURFL_Handlers_Utils::checkIfStartsWith ( $userAgent, "Mitsu" );
 	}
-	
-	function lookForMatchingUserAgent($userAgent) {
-		$tollerance = WURFL_Handlers_Utils::firstSpace ( $userAgent );
-		return WURFL_Handlers_Utils::risMatch ( array_keys ( $this->userAgentsWithDeviceID ), $userAgent, $tollerance );
-	}
-	
+		
 	protected $prefix = "MITSUBISHI";
 }
-?>

@@ -8,26 +8,14 @@
  * COPYING file distributed with this package.
  *
  * Copyright (c) 2008-2009, WURFL-Pro S.r.l., Rome, Italy
- * 
- *  
+ *
+ *
  *
  * @category   WURFL
- * @package    WURFL_Request_UserAgentNormalizer
+ * @package    WURFL_Storage
  * @copyright  WURFL-PRO SRL, Rome, Italy
  * @license
+ * @author     Fantayeneh Asres Gizaw
  * @version    $id$
  */
-class WURFL_Request_UserAgentNormalizer_BabelFish implements WURFL_Request_UserAgentNormalizer_Interface  {
-
-	/**
-	 * 
-	 * @param string $userAgent
-	 * @return string
-	 */
-	public function normalize($userAgent) {
-		return $userAgent;
-	}
-
-}
-
-?>
+class WURFL_Storage_Exception extends Exception {}

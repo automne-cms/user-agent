@@ -46,4 +46,3 @@ class WURFL_Handlers_AlcatelHandler extends WURFL_Handlers_Handler {
 	
 	protected $prefix = "ALCATEL";
 }
-?>

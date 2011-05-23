@@ -20,7 +20,8 @@
 class WURFL_WURFLUtils {
 
 	/**
-	 * returns the User Agent From $_SERVER
+	 * returns the User Agent From $_SERVER or Empty
+     * String if not found one
 	 *
 	 * @param $_SERVER $request
 	 * @return string
@@ -37,7 +38,7 @@ class WURFL_WURFLUtils {
 			return $request['HTTP_USER_AGENT'];
 		}
 		
-		throw new WURFL_WURFLException("No user-agent found in the request");
+		return '';
 	}
 
 	/**
@@ -82,9 +83,9 @@ class WURFL_WURFLUtils {
 		
 		$accept = $request["accept"];
 		if (isset($accept)) {
-			if ((strpos($accept, WURFL_Constants.ACCEPT_HEADER_VND_WAP_XHTML_XML) !== 0)
-			|| (strpos($accept, WURFL_Constants.ACCEPT_HEADER_XHTML_XML) !== 0)
-			|| (strpos($accept, WURFL_Constants.ACCEPT_HEADER_TEXT_HTML) !== 0)) {
+			if ((strpos($accept, WURFL_Constants::ACCEPT_HEADER_VND_WAP_XHTML_XML) !== 0)
+			|| (strpos($accept, WURFL_Constants::ACCEPT_HEADER_XHTML_XML) !== 0)
+			|| (strpos($accept, WURFL_Constants::ACCEPT_HEADER_TEXT_HTML) !== 0)) {
 				return true;;
 			}
 		}
@@ -125,21 +126,5 @@ class WURFL_WURFLUtils {
 		return $array1;
 	}
 	
-	public static function return_bytes($val) {
-		$val = trim($val);
-		$last = strtolower($val[strlen($val)-1]);
-		switch($last) {
-			// The 'G' modifier is available since PHP 5.1.0
-			case 'g':
-				$val *= 1024;
-			case 'm':
-				$val *= 1024;
-			case 'k':
-				$val *= 1024;
-		}
-
-		return $val;
-	}
 }
 
-?>

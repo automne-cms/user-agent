@@ -35,16 +35,19 @@ class WURFL_Configuration_InMemoryConfig extends  WURFL_Configuration_Config {
 	}
 	
 	public function persistence($provider, $params = array()) {
-		$this->persistence["provider"] = $provider;
-		$this->persistence["params"] = $params;
+		$this->persistence = array_merge(array("provider"=> $provider), array("params" => $params));
 		return $this;				
 	}
 	
 	public function cache($provider, $params = array()) {
-		$this->cache["provider"] = $provider;
-		$this->cache["params"] = $params;
+		$this->cache = array_merge(array("provider"=> $provider), array("params" => $params));
 		return $this;
 	}
+	
+	public function allowReload($reload=true) {
+        $this->allowReload = $reload;
+        return $this;
+    }
 	
 	/**
 	 * 
@@ -56,4 +59,3 @@ class WURFL_Configuration_InMemoryConfig extends  WURFL_Configuration_Config {
 	
 }
 
-?>

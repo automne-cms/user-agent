@@ -23,4 +23,3 @@ interface WURFL_Handlers_Matcher_Interface {
 	public function match(&$collection, $needle, $tollerance);
 }
 
-?>

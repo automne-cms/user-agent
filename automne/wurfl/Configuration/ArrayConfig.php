@@ -1,6 +1,4 @@
 <?php
-
-
 /**
  * WURFL API
  *
@@ -20,8 +18,7 @@
  * @version    $id$
  */
 class WURFL_Configuration_ArrayConfig extends  WURFL_Configuration_Config {
-	
-	
+		
 	function __construct($configFilePath) {
 		parent::__construct($configFilePath);
 		
@@ -55,6 +52,9 @@ class WURFL_Configuration_ArrayConfig extends  WURFL_Configuration_Config {
 		if (array_key_exists ( WURFL_Configuration_Config::LOG_DIR, $configuration )) {
 			$this->setLogDirConfiguration($configuration[WURFL_Configuration_Config::LOG_DIR]);
 		}
+
+        $this->allowReload = array_key_exists(WURFL_Configuration_Config::ALLOW_RELOAD, $configuration)
+                ? $configuration[WURFL_Configuration_Config::ALLOW_RELOAD] : FALSE; 
 	}
 	
 	
@@ -92,4 +92,3 @@ class WURFL_Configuration_ArrayConfig extends  WURFL_Configuration_Config {
 	
 }
 
-?>

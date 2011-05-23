@@ -8,18 +8,17 @@
  * COPYING file distributed with this package.
  *
  * Copyright (c) 2008-2009, WURFL-Pro S.r.l., Rome, Italy
- * 
- *  
+ *
+ *
  *
  * @category   WURFL
- * @package    WURFL_Request_UserAgentNormalizer
+ * @package    WURFL_Request_UserAgentNormalizer_Specific
  * @copyright  WURFL-PRO SRL, Rome, Italy
  * @license
+ * @author     Fantayeneh Asres Gizaw
  * @version    $id$
  */
-class WURFL_Request_UserAgentNormalizer_YesWAP implements WURFL_Request_UserAgentNormalizer_Interface  {
-
-	const YES_WAP_REGEX = "/\\s*Mozilla\\/4\\.0 \\(YesWAP mobile phone proxy\\)/";
+class WURFL_Request_UserAgentNormalizer_Specific_Maemo implements WURFL_Request_UserAgentNormalizer_Interface  {
 	
 	/**
 	 * 
@@ -27,10 +26,13 @@ class WURFL_Request_UserAgentNormalizer_YesWAP implements WURFL_Request_UserAgen
 	 * @return string
 	 */
 	public function normalize($userAgent) {
-		return preg_replace(self::YES_WAP_REGEX, "", $userAgent);
+		$maemoIndex = strpos($userAgent, "Maemo");
+		if($maemoIndex !== 0) {
+			return substr($userAgent, $maemoIndex);
+		}	
+		return $userAgent;	
 	}
 	
-	
-	
+		
 }
-?>
+

@@ -107,5 +107,3 @@ class WURFL_CapabilityService {
 	private $_deviceRepository;
 	private $_cacheProvider;
 }
-
-?>

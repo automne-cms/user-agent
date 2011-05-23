@@ -143,7 +143,7 @@ class WURFL_Xml_PersistenceProvider_MysqlPersistenceProvider extends WURFL_Xml_P
 	}
 	
 	public function clear() {
-		$sql = "truncate table `$this->db`.`$this->table`";
+		$sql = "truncate table `$this->_db`.`$this->_table`";
 		$success=mysql_query($sql,$this->_link);
 		if (mysql_error($this->_link)) {
 			throw new WURFL_Xml_PersistenceProvider_Exception("MySql error ".mysql_error($this->_link)." clearing $this->_db.$this->_table");
@@ -151,17 +151,10 @@ class WURFL_Xml_PersistenceProvider_MysqlPersistenceProvider extends WURFL_Xml_P
 		return $success;
 	}
 	
-	public function isWURFLLoaded() {
-		return $this->load(WURFL_Xml_XMLResourceManager::WURFL_LOADED);
-	}
-
-	public function setWURFLLoaded() {
-		return $this->save(WURFL_Xml_XMLResourceManager::WURFL_LOADED, TRUE);
-	}
 
 
 	/**
-	 * Ensures the existance of the the PHP Extension memcache
+	 * Ensures the existance of the the PHP Extension mysql
 	 *
 	 */
 	private function _ensureModuleExistance() {

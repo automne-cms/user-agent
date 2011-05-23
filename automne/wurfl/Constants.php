@@ -38,5 +38,3 @@ class WURFL_Constants {
 	const SQLITE = "sqlite";
 	const MYSQL = "mysql";
 }
-
-?>
