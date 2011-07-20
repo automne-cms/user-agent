@@ -1,3 +1,6 @@
+0.21
+[REFACTOR] : Update WURFL
+
 0.20
 [BUG] : Correct an update problem for Browscap
 [REFACTOR] : Handle new Automne 4.1 replacement system : tag atm-ua and atm-ua-if is no more needed : all replacements can be done anywhere and classic atm-if tag can be used
