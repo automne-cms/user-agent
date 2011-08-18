@@ -182,7 +182,9 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 			}
 			return $_SESSION['cms_ua']['browserInfos'];
 		}
-		
+		if (!isset($_SERVER['HTTP_USER_AGENT'])) {
+			return false;
+		}
 		//check cache dirs
 		$cachedir = new CMS_file(PATH_CACHE_FS.'/browscap', CMS_file::FILE_SYSTEM, CMS_file::TYPE_DIRECTORY);
 		if (!$cachedir->exists()) {
