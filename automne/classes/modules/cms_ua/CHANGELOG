@@ -1,5 +1,6 @@
 0.22
 [BUG] : Check if $_SERVER['HTTP_USER_AGENT'] exists
+[REFACTOR] : Update WURFL
 
 0.21
 [REFACTOR] : Update WURFL
