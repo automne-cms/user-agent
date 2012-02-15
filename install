@@ -1,6 +1,7 @@
 #Files to delete
 <	/automne/wurfl
 <	/automne/cache/wurfl
+<	/automne/cache/browscap
 #Files to copy/update
 >	/automne/phpbrowscap/license.txt
 >	/automne/phpbrowscap/Browscap.php
