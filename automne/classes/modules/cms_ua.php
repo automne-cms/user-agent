@@ -45,6 +45,7 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 				 * Module classes
 				 */
 				'browscap' 						=> PATH_MAIN_FS.'/phpbrowscap/Browscap.php',
+				'cms_browscap' 					=> PATH_MODULES_FS.'/'.MOD_CMS_UA_CODENAME.'/browscap.php',
 			);
 		}
 		$file = '';
@@ -168,10 +169,13 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 	  * @access private
 	  */
 	private function _getBrowserInfos() {
+		if (io::request('ua') == 'reset' && isset($_SESSION['cms_ua'])) {
+			unset($_SESSION['cms_ua']);
+		}
 		if (isset($_SESSION['cms_ua']['browserInfos'])) {
 			//check request
-			if (isset($_REQUEST['ua']) && is_array($_REQUEST['ua'])) {
-				foreach($_REQUEST['ua'] as $key => $value) {
+			if (io::request('ua', 'is_array', false)) {
+				foreach(io::request('ua') as $key => $value) {
 					if (isset($_SESSION['cms_ua']['browserInfos']['browscap'][$key])) {
 						$_SESSION['cms_ua']['browserInfos']['browscap'][$key] = CMS_module_cms_ua::_cleanValue($value);
 					}
@@ -197,7 +201,7 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 			$cachedir->writeTopersistence();
 		}
 		//get Browscap datas
-		$browscap = new Browscap(PATH_CACHE_FS.'/browscap');
+		$browscap = new CMS_browscap(PATH_CACHE_FS.'/browscap');
 		$browscap->silent = false;
 		try {
 			$_SESSION['cms_ua']['browserInfos']['browscap'] = array_map(array('CMS_module_cms_ua', '_cleanValue'), $browscap->getBrowser($_SERVER['HTTP_USER_AGENT'], true));
@@ -209,6 +213,7 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		//get wurfl datas
 		try {
 			@set_time_limit(180); //because wurfl cache creation can be long ...
+			@ini_set('memory_limit', '128M'); //because wurfl cache creation is heavy ...
 			$wurflConfigFile = PATH_MAIN_FS.'/wurfl/wurfl-config.xml';
 			$wurflConfig = new WURFL_Configuration_XmlConfig($wurflConfigFile);
 			$wurflManagerFactory = new WURFL_WURFLManagerFactory($wurflConfig);
@@ -221,8 +226,8 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 			$_SESSION['cms_ua']['browserInfos']['wurfl'] = array();
 		}
 		//check request
-		if (isset($_REQUEST['ua']) && is_array($_REQUEST['ua'])) {
-			foreach($_REQUEST['ua'] as $key => $value) {
+		if (io::request('ua', 'is_array', false)) {
+			foreach(io::request('ua') as $key => $value) {
 				if (isset($_SESSION['cms_ua']['browserInfos']['browscap'][$key])) {
 					$_SESSION['cms_ua']['browserInfos']['browscap'][$key] = CMS_module_cms_ua::_cleanValue($value);
 				}

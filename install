@@ -1,7 +1,11 @@
+#Files to delete
+<	/automne/wurfl
+<	/automne/cache/wurfl
 #Files to copy/update
 >	/automne/phpbrowscap/license.txt
 >	/automne/phpbrowscap/Browscap.php
 >	/automne/classes/modules/cms_ua/VERSION
+>	/automne/classes/modules/cms_ua/browscap.php
 >	/automne/classes/modules/cms_ua/CHANGELOG
 >	/automne/classes/modules/cms_ua.php
 >	/automne/wurfl/DeviceRepository.php
@@ -34,7 +38,6 @@
 >	/automne/wurfl/Context.php
 >	/automne/wurfl/Application.php
 >	/automne/wurfl/CapabilitiesHolder.php
->	/automne/wurfl/COPYING
 >	/automne/wurfl/WURFLManager.php
 >	/automne/wurfl/Logger/LoggerFactory.php
 >	/automne/wurfl/Logger/FileLogger.php
@@ -88,7 +91,6 @@
 >	/automne/wurfl/Xml/Interface.php
 >	/automne/wurfl/Xml/AbstractIterator.php
 >	/automne/wurfl/wurfl.zip
->	/automne/wurfl/FileManager.php
 >	/automne/wurfl/Handlers/DoCoMoHandler.php
 >	/automne/wurfl/Handlers/SagemHandler.php
 >	/automne/wurfl/Handlers/FirefoxHandler.php
@@ -142,7 +144,6 @@
 >	/automne/wurfl/Device.php
 >	/automne/wurfl/ClassLoader.php
 >	/automne/wurfl/Constants.php
->	/automne/wurfl/README
 >	/automne/wurfl/VERSION
 >	/automne/wurfl/web_browsers_patch.xml
 >	/automne/wurfl/WURFLUtils.php

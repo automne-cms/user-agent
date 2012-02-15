@@ -1,45 +1,48 @@
 <?php
 /**
- * WURFL API
+ * Copyright (c) 2011 ScientiaMobile, Inc.
  *
- * LICENSE
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * This file is released under the GNU General Public License. Refer to the
- * COPYING file distributed with this package.
- *
- * Copyright (c) 2008-2009, WURFL-Pro S.r.l., Rome, Italy
- *
- *
+ * Refer to the COPYING file distributed with this package.
  *
  * @category   WURFL
  * @package    WURFL_Handlers_Matcher
- * @copyright  WURFL-PRO SRL, Rome, Italy
- * @license
+ * @copyright  ScientiaMobile, Inc.
+ * @license    GNU Affero General Public License
  * @version    $id$
  */
-
+/**
+ * WURFL Reduction in String user agent matcher.
+ * This User Agent Matcher uses its match() method to find a matching user agent by
+ * removing characters from the right side of the User Agents one-by-one until either
+ * a match is found, or the string length is lower than the specified tolerance.
+ * @see match()
+ * @package    WURFL_Handlers_Matcher
+ */
 class WURFL_Handlers_Matcher_RISMatcher implements WURFL_Handlers_Matcher_Interface {
 	
 	/**
-	 * Creates a RISMatcher
-	 *
+	 * Instance of WURFL_Handlers_Matcher_LDMatcher
+	 * @var WURFL_Handlers_Matcher_LDMatcher
+	 */
+	private static $instance;
+	
+	/**
+	 * Returns an instance of the RISMatcher singleton
 	 * @return WURFL_Handlers_RISMatcher
 	 */
 	public static function INSTANCE() {
 		if (self::$instance === null) {
-			self::$instance = new self ();
+			self::$instance = new self();
 		}
 		return self::$instance;
 	}
 	
-	/**
-	 *
-	 * @param array $collection
-	 * @param string $needle
-	 * @param int $tollerance
-	 * @return string
-	 */
-	public function match(&$collection, $needle, $tollerance) {
+	public function match(&$collection, $needle, $tolerance) {
 		$match = NULL;
 		$bestDistance = 0;
 		$low = 0;
@@ -66,7 +69,7 @@ class WURFL_Handlers_Matcher_RISMatcher implements WURFL_Handlers_Matcher_Interf
 			}
 		}
 		
-		if ($bestDistance < $tollerance) {
+		if ($bestDistance < $tolerance) {
 			return NULL;
 		}
 		if($bestIndex == 0) {
@@ -98,10 +101,5 @@ class WURFL_Handlers_Matcher_RISMatcher implements WURFL_Handlers_Matcher_Interf
 		return $i;
 	
 	}
-	
-	private function __construct() {
-	}
-	
-	private static $instance;
 }
 
