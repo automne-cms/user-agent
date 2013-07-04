@@ -9,7 +9,7 @@
 // | LICENSE-GPL, and is available through the world-wide-web at		  |
 // | http://www.gnu.org/copyleft/gpl.html.								  |
 // +----------------------------------------------------------------------+
-// | Author: Sébastien Pauchet <sebastien.pauchet@ws-interactive.fr>      |
+// | Author: Sï¿½bastien Pauchet <sebastien.pauchet@ws-interactive.fr>      |
 // +----------------------------------------------------------------------+
 
 /**
@@ -19,7 +19,7 @@
   *
   * @package Automne
   * @subpackage cms_ua
-  * @author Sébastien Pauchet <sebastien.pauchet@ws-interactive.fr>
+  * @author SÃ©bastien Pauchet <sebastien.pauchet@ws-interactive.fr>
   */
 
 class CMS_browscap extends Browscap
@@ -33,41 +33,50 @@ class CMS_browscap extends Browscap
 	 */
 	protected function _getRemoteData($url) {
 		$file = '';
-		try {
-			$client = new Zend_Http_Client();
-			$client->setUri($url);
-			//HTTP config
-			$httpConfig = array(
-			    'maxredirects'	=> 5,
-			    'timeout'		=> 10,
-				'useragent'		=> 'Mozilla/5.0 (compatible; Automne/'.AUTOMNE_VERSION.'; +http://www.automne-cms.org)',
-			);
-			if (defined('APPLICATION_PROXY_HOST') && APPLICATION_PROXY_HOST) {
-				$httpConfig['adapter'] = 'Zend_Http_Client_Adapter_Proxy';
-				$httpConfig['proxy_host'] = APPLICATION_PROXY_HOST;
-				if (defined('APPLICATION_PROXY_PORT') && APPLICATION_PROXY_PORT) {
-					$httpConfig['proxy_port'] = APPLICATION_PROXY_PORT;
+		if ($this->_getUpdateMethod() == self::UPDATE_LOCAL) {
+			$file = file_get_contents($url);
+			if ($file !== false) {
+				return $file;
+			} else {
+				throw new Browscap_Exception('Cannot open the local file');
+			}
+		} else {
+			try {
+				$client = new Zend_Http_Client();
+				$client->setUri($url);
+				//HTTP config
+				$httpConfig = array(
+				    'maxredirects'	=> 5,
+				    'timeout'		=> 10,
+					'useragent'		=> 'Mozilla/5.0 (compatible; Automne/'.AUTOMNE_VERSION.'; +http://www.automne-cms.org)',
+				);
+				if (defined('APPLICATION_PROXY_HOST') && APPLICATION_PROXY_HOST) {
+					$httpConfig['adapter'] = 'Zend_Http_Client_Adapter_Proxy';
+					$httpConfig['proxy_host'] = APPLICATION_PROXY_HOST;
+					if (defined('APPLICATION_PROXY_PORT') && APPLICATION_PROXY_PORT) {
+						$httpConfig['proxy_port'] = APPLICATION_PROXY_PORT;
+					}
+				}
+				$client->setConfig($httpConfig);
+				
+				$client->request();
+				$response = $client->getLastResponse();
+			} catch (Zend_Http_Client_Exception $e) {
+				CMS_grandFather::raiseError('Error for url: '.$url.' - '.$e->getMessage());
+			}
+			if (isset($response) && $response->isSuccessful()) {
+				$file = $response->getBody();
+			} else {
+				if (isset($response)) {
+					CMS_grandFather::raiseError('Error for url: '.$url.' - '.$response->getStatus().' - '.$response->getMessage());
+				} else {
+					CMS_grandFather::raiseError('Error for url: '.$url.' - no response object');
 				}
 			}
-			$client->setConfig($httpConfig);
-			
-			$client->request();
-			$response = $client->getLastResponse();
-		} catch (Zend_Http_Client_Exception $e) {
-			CMS_grandFather::raiseError('Error for url: '.$url.' - '.$e->getMessage());
-		}
-		if (isset($response) && $response->isSuccessful()) {
-			$file = $response->getBody();
-		} else {
-			if (isset($response)) {
-				CMS_grandFather::raiseError('Error for url: '.$url.' - '.$response->getStatus().' - '.$response->getMessage());
-			} else {
-				CMS_grandFather::raiseError('Error for url: '.$url.' - no response object');
+			if (!$file) {
+				//try parent method
+				$file = parent::_getRemoteData($url);
 			}
-		}
-		if (!$file) {
-			//try parent method
-			$file = parent::_getRemoteData($url);
 		}
 		return $file;
 	}
