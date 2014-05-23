@@ -29,7 +29,7 @@ define("MOD_CMS_UA_CODENAME", "cms_ua");
 class CMS_module_cms_ua extends CMS_moduleValidation
 {
 	const MESSAGE_MOD_CMS_UA_EXPLANATION = 2;
-	
+
 	/**
 	  * Module autoload handler
 	  *
@@ -44,7 +44,7 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 				/**
 				 * Module classes
 				 */
-				'browscap' 						=> PATH_MAIN_FS.'/phpbrowscap/Browscap.php',
+				'phpbrowscap\browscap'	=> PATH_MAIN_FS.'/phpbrowscap/Browscap.php',
 				'cms_browscap' 					=> PATH_MODULES_FS.'/'.MOD_CMS_UA_CODENAME.'/browscap.php',
 			);
 		}
@@ -60,15 +60,15 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		}
 		return $file;
 	}
-	
-	/** 
+
+	/**
 	  * Get the tags to be treated by this module for the specified treatment mode, visualization mode and object.
 	  * @param integer $treatmentMode The current treatment mode (see constants on top of CMS_modulesTags class for accepted values).
 	  * @param integer $visualizationMode The current visualization mode (see constants on top of cms_page class for accepted values).
 	  * @return array of tags to be treated.
 	  * @access public
 	  */
-	function getWantedTags($treatmentMode, $visualizationMode) 
+	function getWantedTags($treatmentMode, $visualizationMode)
 	{
 		$return = array();
 		switch ($treatmentMode) {
@@ -85,8 +85,8 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		}
 		return $return;
 	}
-	
-	/** 
+
+	/**
 	  * Treat given content tag by this module for the specified treatment mode, visualization mode and object.
 	  *
 	  * @param string $tag The CMS_XMLTag.
@@ -119,7 +119,7 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 							"#\{\{(wurfl|browscap|ua)\:([a-zA-Z_-]+)\}\}#U" => '<?php echo CMS_module_cms_ua::getBrowserInfo(\'\2\'); ?>'
 						);
 						$tagContent = preg_replace(array_keys($replace), $replace, $tag->getInnerContent());
-						
+
 						//decode ampersand
 						$what = io::decodeEntities($tag->getAttribute('what'));
 						$replace = array(
@@ -145,8 +145,8 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		}
 		return $tagContent;
 	}
-	
-	
+
+
 	/**
 	  * Module replacements vars
 	  *
@@ -157,10 +157,10 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		$replace = array();
 		//replace '{i18n:msgid}' value by corresponding call
 		$replace["#^\{(wurfl|browscap|ua)\:([^:]*?(::)?[^:]*?)\}$#U"] = 'CMS_module_cms_ua::getBrowserInfo("\2")';
-		
+
 		return $replace;
 	}
-	
+
 	/**
 	  * Return the browser user agent infos
 	  * This method use $_SESSION['cms_ua']['browserInfos'] to store browser informations
@@ -209,7 +209,7 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 			CMS_grandFather::raiseError($e->getMessage());
 			$_SESSION['cms_ua']['browserInfos']['browscap'] = array();
 		}
-		
+
 		//get wurfl datas
 		try {
 			@set_time_limit(180); //because wurfl cache creation can be long ...
@@ -217,7 +217,7 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 			$wurflConfigFile = PATH_MAIN_FS.'/wurfl/wurfl-config.xml';
 			$wurflConfig = new WURFL_Configuration_XmlConfig($wurflConfigFile);
 			$wurflManagerFactory = new WURFL_WURFLManagerFactory($wurflConfig);
-			$wurflManager = $wurflManagerFactory->create();	
+			$wurflManager = $wurflManagerFactory->create();
 			$wurflInfo = $wurflManager->getWURFLInfo();
 			$requestingDevice = $wurflManager->getDeviceForHttpRequest($_SERVER);
 			$_SESSION['cms_ua']['browserInfos']['wurfl'] = array_map(array('CMS_module_cms_ua', '_cleanValue'), $requestingDevice->getAllCapabilities());
@@ -238,7 +238,7 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		}
 		return $_SESSION['cms_ua']['browserInfos'];
 	}
-	
+
 	/**
 	  * Return a clean browser value and change string true and false by boolean.
 	  * @param string $value the value to clean
@@ -263,7 +263,7 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 			break;
 		}
 	}
-	
+
 	/**
 	  * Return the browser user agent info for the given info name
 	  * @param string $dataname the browser info to get
@@ -299,10 +299,10 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		}
 		return '';
 	}
-	
+
 	/**
 	  * Return the module code for the specified treatment mode, visualization mode and object.
-	  * 
+	  *
 	  * @param mixed $modulesCode the previous modules codes (usually string)
 	  * @param integer $treatmentMode The current treatment mode (see constants on top of this file for accepted values).
 	  * @param integer $visualizationMode The current visualization mode (see constants on top of cms_page class for accepted values).

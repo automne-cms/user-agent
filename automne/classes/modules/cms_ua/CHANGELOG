@@ -1,3 +1,7 @@
+0.24
+Update browscap-php to version 2.0b (https://github.com/DaAwesomeP/browscap-php)
+Now requires PHP 5.3+
+
 0.23
 [REFACTOR] : Update WURFL to API version 1.3.1 and database version 2.3
 [REFACTOR] : Update PHPBrowscap to version 1.0
