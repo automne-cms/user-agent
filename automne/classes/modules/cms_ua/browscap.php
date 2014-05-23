@@ -22,7 +22,7 @@
   * @author Sébastien Pauchet <sebastien.pauchet@ws-interactive.fr>
   */
 
-class CMS_browscap extends Browscap
+class CMS_browscap extends phpbrowscap\Browscap
 {
 	/**
 	 * Retrieve the data identified by the URL
@@ -58,7 +58,7 @@ class CMS_browscap extends Browscap
 					}
 				}
 				$client->setConfig($httpConfig);
-				
+
 				$client->request();
 				$response = $client->getLastResponse();
 			} catch (Zend_Http_Client_Exception $e) {
