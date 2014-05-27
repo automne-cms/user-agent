@@ -1,3 +1,6 @@
+0.25
+Browscap cache file is now generated in a daily routine script
+
 0.24
 Update browscap-php to version 2.0b (https://github.com/DaAwesomeP/browscap-php)
 Now requires PHP 5.3+
