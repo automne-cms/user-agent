@@ -202,6 +202,7 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 		}
 		//get Browscap datas
 		$browscap = new CMS_browscap(PATH_CACHE_FS.'/browscap');
+		$browscap->doAutoUpdate = false;
 		$browscap->silent = false;
 		try {
 			$_SESSION['cms_ua']['browserInfos']['browscap'] = array_map(array('CMS_module_cms_ua', '_cleanValue'), $browscap->getBrowser($_SERVER['HTTP_USER_AGENT'], true));
