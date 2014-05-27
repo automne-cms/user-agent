@@ -31,6 +31,37 @@ class CMS_module_cms_ua extends CMS_moduleValidation
 	const MESSAGE_MOD_CMS_UA_EXPLANATION = 2;
 
 	/**
+	 * Class Constructor
+	 */
+	function __construct()
+	{
+		parent::__construct(MOD_CMS_UA_CODENAME);
+	}
+
+	/**
+	  * Process the daily routine: refresh browscap cache
+	  *
+	  * @return void
+	  * @access public
+	  */
+	public function processDailyRoutine() {
+		CMS_scriptsManager::addScript(MOD_CMS_UA_CODENAME, array('task' => 'refreshBrowscapCache'));
+		//start script
+		CMS_scriptsManager::startScript();
+		return true;
+	}
+
+	public function scriptInfo($parameters){
+		$taskLabel = "Refreshing browscap cache file";
+		return $taskLabel;
+	}
+
+	public function scriptTask($parameters) {
+		$browscap = new CMS_browscap(PATH_CACHE_FS.'/browscap');
+		$browscap->updateCache();
+	}
+
+	/**
 	  * Module autoload handler
 	  *
 	  * @param string $classname the classname required for loading
